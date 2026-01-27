@@ -4,6 +4,8 @@ import { BackendError, TimeoutError } from '../common/errors';
 import type { MCPResponse } from '../mcp/validator';
 import { SSEParser } from './sse-parser';
 
+const contentTypeHeader = 'Content-Type';
+
 export interface ForwardRequest {
   jsonrpc: string;
   id: string | number;
@@ -33,11 +35,11 @@ export class RequestForwarder {
       const timeoutId = setTimeout(() => controller.abort(), timeout);
 
       try {
+        const jsonHeaders: Record<string, string> = { [contentTypeHeader]: 'application/json' };
+
         const response = await fetch(backendUrl, {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: jsonHeaders,
           body: JSON.stringify(request),
           signal: controller.signal,
         });
@@ -47,8 +49,7 @@ export class RequestForwarder {
         if (!response.ok) {
           throw new BackendError(`Backend returned status ${response.status}`);
         }
-
-        const data = (await response.json()) as unknown as MCPResponse;
+  const data = (await response.json()) as MCPResponse;
         const latency = Date.now() - startTime;
 
         this.logger.debug(`Response received from backend`, {
@@ -103,11 +104,11 @@ export class RequestForwarder {
       });
 
       // Send POST request (SSE servers expect POST with JSON-RPC payload)
+      const jsonHeaders: Record<string, string> = { [contentTypeHeader]: 'application/json' };
+
       const response = await fetch(backendUrl, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: jsonHeaders,
         body: JSON.stringify(request),
       });
 
@@ -156,7 +157,7 @@ export class RequestForwarder {
         eventCount: result.events.length,
       });
 
-      return result.jsonrpc as MCPResponse;
+      return result.jsonrpc;
     } catch (error) {
       const latency = Date.now() - startTime;
       this.metrics.errorCount.inc();
@@ -181,9 +182,10 @@ export class RequestForwarder {
       serverUrls.map((url) => this.forwardRequest(url, request, timeout))
     );
 
-    return results
-      .filter((result) => result.status === 'fulfilled')
-      .map((result) => (result as PromiseFulfilledResult<MCPResponse>).value);
+    const fulfilled = results.filter(
+      (r): r is PromiseFulfilledResult<MCPResponse> => r.status === 'fulfilled'
+    );
+    return fulfilled.map((r) => r.value);
   }
 }
 

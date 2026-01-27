@@ -1,4 +1,6 @@
+/* eslint-disable @typescript-eslint/no-redundant-type-constituents, @typescript-eslint/no-unsafe-assignment */
 import { createParser, type EventSourceMessage } from 'eventsource-parser';
+import { isMCPResponse, type MCPResponse } from '../mcp/validator';
 import { SSEEvent, SSEConnection, SSEParseResult } from '../types/sse';
 import { getLogger } from '../common/logger';
 
@@ -118,13 +120,13 @@ export class SSEParser {
 
       const decoder = new TextDecoder();
       
-      while (true) {
+      let finished = false;
+      while (!finished) {
         const { done, value } = await reader.read();
-        
         if (done || this.connection.abortController?.signal.aborted) {
+          finished = true;
           break;
         }
-
         const chunk = decoder.decode(value, { stream: true });
         parser.feed(chunk);
       }
@@ -147,7 +149,7 @@ export class SSEParser {
     }
 
     // Extract JSON-RPC from buffered events
-    let jsonrpc: unknown | undefined;
+    let jsonrpc: MCPResponse | undefined;
     if (!parseError && !timedOut && events.length > 0) {
       try {
         jsonrpc = this.extractJSONRPC(events);
@@ -174,7 +176,7 @@ export class SSEParser {
    * Extract JSON-RPC message from SSE events
    * Handles multi-line data fields and concatenates them
    */
-  extractJSONRPC(events: SSEEvent[]): unknown {
+  extractJSONRPC(events: SSEEvent[]): MCPResponse {
     // Find message events (ignore close, error, etc.)
     const messageEvents = events.filter(e => e.event === 'message');
     
@@ -194,19 +196,11 @@ export class SSEParser {
     }
 
     try {
-      // Parse JSON-RPC message
-      const jsonrpc = JSON.parse(dataPayload);
-      
-      // Validate it's a JSON-RPC message
-      if (!jsonrpc || typeof jsonrpc !== 'object') {
-        throw new Error('Invalid JSON-RPC message: not an object');
+      const parsed = this.parseUnknownJson(dataPayload);
+      if (!isMCPResponse(parsed)) {
+        throw new Error('Invalid JSON-RPC message: schema validation failed');
       }
-
-      if (!('jsonrpc' in jsonrpc) || jsonrpc.jsonrpc !== '2.0') {
-        throw new Error('Invalid JSON-RPC message: missing or invalid jsonrpc field');
-      }
-
-      return jsonrpc;
+      return parsed;
     } catch (error) {
       if (error instanceof SyntaxError) {
         throw new Error(`Invalid JSON in SSE data field: ${error.message}`);
@@ -231,5 +225,10 @@ export class SSEParser {
     logger.info('SSE connection aborted', {
       serverId: this.connection.serverId,
     });
+  }
+
+  private parseUnknownJson(payload: string): unknown {
+    // Cast JSON.parse result to unknown to avoid any-based assignments
+    return JSON.parse(payload) as unknown;
   }
 }

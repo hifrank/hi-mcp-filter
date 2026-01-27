@@ -18,12 +18,12 @@ export function createHealthCheck(): HealthCheckResponse {
   };
 }
 
-export async function performHealthCheck(): Promise<HealthCheckResponse> {
+export function performHealthCheck(): HealthCheckResponse {
   const logger = getLogger();
 
   try {
     const health = createHealthCheck();
-    logger.debug('Health check completed', health as any);
+    logger.debug('Health check completed', health);
     return health;
   } catch (error) {
     logger.error('Health check failed', error as Error);

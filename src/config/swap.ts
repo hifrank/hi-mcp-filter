@@ -1,9 +1,9 @@
-import Ajv from 'ajv';
+import ajvFactory from 'ajv';
 import addFormats from 'ajv-formats';
 import configSchema from './schema.json';
 import type { ProxyConfig } from './loader';
 
-const ajv = new Ajv({ strict: false });
+const ajv = new ajvFactory({ strict: false });
 addFormats(ajv);
 const validateConfig = ajv.compile(configSchema);
 
@@ -31,7 +31,7 @@ export class AtomicConfigSwap {
   private currentConfig: ProxyConfig | null = null;
   private pendingConfig: ProxyConfig | null = null;
 
-  async swap(newConfig: ProxyConfig): Promise<boolean> {
+  swap(newConfig: unknown): boolean {
     const validator = new ConfigValidator();
     const validation = validator.validate(newConfig);
 
@@ -39,8 +39,9 @@ export class AtomicConfigSwap {
       return false;
     }
 
-    this.pendingConfig = newConfig;
-    this.currentConfig = newConfig;
+    const typedConfig = newConfig as ProxyConfig;
+    this.pendingConfig = typedConfig;
+    this.currentConfig = typedConfig;
 
     return true;
   }

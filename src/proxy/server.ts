@@ -1,4 +1,4 @@
-import Fastify, { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
+import fastify, { FastifyInstance, FastifyRequest, FastifyReply } from 'fastify';
 import { getLogger } from '../common/logger';
 import { getMetrics } from '../common/metrics';
 
@@ -16,7 +16,7 @@ export class ProxyServer {
 
   constructor(config: ProxyServerConfig) {
     this.config = config;
-    this.app = Fastify({
+    this.app = fastify({
       logger: false,
       requestTimeout: config.requestTimeout,
     });
@@ -36,17 +36,16 @@ export class ProxyServer {
     // Proxy endpoint
     this.app.post<{ Params: { serverId: string } }>(
       '/proxy/:serverId',
-      async (request: FastifyRequest, reply: FastifyReply) => {
+      async (request: FastifyRequest<{ Params: { serverId: string } }>, reply: FastifyReply) => {
         const startTime = Date.now();
-        const params = request.params as { serverId: string };
-        const { serverId } = params;
+        const { serverId } = request.params;
 
         try {
           this.logger.debug(`Proxy request received for server: ${serverId}`);
           this.metrics.requestCount.inc();
 
           // Extract body
-          const body = request.body as unknown;
+          const body = request.body;
 
           // Record latency
           const latency = Date.now() - startTime;

@@ -12,11 +12,11 @@ export interface LogEntry {
   error?: string;
 }
 
-export async function logRequestResponse(
+export function logRequestResponse(
   request: FastifyRequest,
   response: MCPResponse,
   latencyMs: number
-): Promise<void> {
+): void {
   const logger = getLogger();
 
   const logEntry: LogEntry = {
@@ -31,10 +31,10 @@ export async function logRequestResponse(
     logEntry.error = response.error.message;
   }
 
-  logger.info('Request processed', logEntry as any);
+  logger.info('Request processed', logEntry);
 }
 
-export async function logProxyRequest(request: FastifyRequest, serverId: string): Promise<void> {
+export function logProxyRequest(request: FastifyRequest, serverId: string): void {
   const logger = getLogger();
 
   logger.debug('Proxy request', {

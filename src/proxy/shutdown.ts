@@ -47,7 +47,7 @@ export class GracefulShutdown {
       process.on(signal, () => {
         this.logger.info(`Received ${signal}, initiating graceful shutdown`);
         this.shutdown(app, timeoutMs).catch((error) => {
-          this.logger.error('Shutdown error', error);
+          this.logger.error('Shutdown error', error as Error);
         });
       });
     });

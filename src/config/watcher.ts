@@ -12,9 +12,9 @@ export class ConfigWatcher {
   private watcher: chokidar.FSWatcher | null = null;
   private debounceTimer: NodeJS.Timeout | null = null;
   private debounceMs: number;
-  private callback: (filePath: string) => Promise<void>;
+  private callback: (filePath: string) => Promise<void> | void;
 
-  constructor(debounceMs: number = 1000, callback: (filePath: string) => Promise<void> = async () => {}) {
+  constructor(debounceMs: number = 1000, callback: (filePath: string) => Promise<void> | void = async () => {}) {
     this.debounceMs = debounceMs;
     this.callback = callback;
   }
@@ -36,7 +36,7 @@ export class ConfigWatcher {
 
     this.watcher.on('change', (path) => {
       this.logger.debug(`File changed: ${path}`);
-      this.handleChange(path);
+      void this.handleChange(path);
     });
 
     this.logger.info(`Watching file for changes: ${filePath}`);
@@ -49,18 +49,21 @@ export class ConfigWatcher {
     }
 
     // Set new debounce timer
-    this.debounceTimer = setTimeout(async () => {
-      try {
-        await this.callback(filePath);
-      } catch (error) {
-        this.logger.error('Config reload callback failed', error as Error);
-      }
+    this.debounceTimer = setTimeout(() => {
+      void (async () => {
+        try {
+          const result = this.callback(filePath);
+          await Promise.resolve(result);
+        } catch (error) {
+          this.logger.error('Config reload callback failed', error as Error);
+        }
+      })();
     }, this.debounceMs);
   }
 
   stop(): void {
     if (this.watcher) {
-      this.watcher.close();
+      void this.watcher.close();
       this.logger.info('File watcher stopped');
     }
 

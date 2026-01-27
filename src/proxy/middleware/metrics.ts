@@ -11,7 +11,7 @@ export function addLatencyHeader(headers: Record<string, string>, latencyMs: num
   headers['X-Proxy-Latency-Ms'] = String(latencyMs);
 }
 
-export function trackRequestMetrics(_request: unknown): void {
+export function trackRequestMetrics(): void {
   const metrics = getMetrics();
   metrics.requestCount.inc();
 }

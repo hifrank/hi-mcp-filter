@@ -1,3 +1,4 @@
+import type { MCPResponse } from '../mcp/validator';
 /**
  * SSE Transport Type Definitions
  * 
@@ -112,7 +113,7 @@ export interface SSEParseResult {
   /**
    * Extracted JSON-RPC message (if successfully parsed)
    */
-  jsonrpc?: unknown;
+  jsonrpc?: MCPResponse;
   
   /**
    * All events received (for debugging/logging)

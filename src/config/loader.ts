@@ -1,13 +1,17 @@
 import fs from 'fs';
-import AjvConstructor from 'ajv';
+import ajvFactory from 'ajv';
 import addFormats from 'ajv-formats';
 import { getLogger } from '../common/logger';
 import { ConfigError } from '../common/errors';
 import configSchema from './schema.json';
 
-const ajv = new AjvConstructor({ strict: true });
+const ajv = new ajvFactory({ strict: true });
 addFormats(ajv);
 const validateConfig = ajv.compile(configSchema);
+
+function isProxyConfig(config: unknown): config is ProxyConfig {
+  return validateConfig(config) as boolean;
+}
 
 export interface MCPServer {
   id: string;
@@ -86,8 +90,7 @@ export function loadConfig(filePath: string): ProxyConfig {
     const content = fs.readFileSync(filePath, 'utf-8');
     const parsedConfig = JSON.parse(content) as unknown;
 
-    const valid = validateConfig(parsedConfig);
-    if (!valid) {
+    if (!isProxyConfig(parsedConfig)) {
       const errors = validateConfig.errors || [];
       const errorMessages = errors
         .map((e) => `${e.schemaPath}: ${e.message}`)
@@ -95,17 +98,15 @@ export function loadConfig(filePath: string): ProxyConfig {
       throw new ConfigError(`Configuration validation failed: ${errorMessages}`);
     }
 
-    const config = parsedConfig as ProxyConfig;
-
     logger.info('Configuration loaded successfully', {
       filePath,
-      servers: config.mcpServers?.length || 0,
-      filters: config.filters?.length || 0,
-      transformations: config.transformations?.length || 0,
-      plugins: config.plugins?.length || 0,
+      servers: parsedConfig.mcpServers?.length || 0,
+      filters: parsedConfig.filters?.length || 0,
+      transformations: parsedConfig.transformations?.length || 0,
+      plugins: parsedConfig.plugins?.length || 0,
     });
 
-    return config;
+    return parsedConfig;
   } catch (error) {
     if (error instanceof ConfigError) {
       throw error;
@@ -134,7 +135,7 @@ export function validateConfigFile(filePath: string): {
     }
 
     const content = fs.readFileSync(filePath, 'utf-8');
-    const config = JSON.parse(content);
+    const config = JSON.parse(content) as unknown;
 
     const valid = validateConfig(config);
     if (!valid) {

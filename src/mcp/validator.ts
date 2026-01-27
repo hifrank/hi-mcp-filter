@@ -1,7 +1,7 @@
-import Ajv from 'ajv';
+import ajvFactory from 'ajv';
 import schema from './schema.json';
 
-const ajv = new Ajv({
+const ajv = new ajvFactory({
   strict: false,
   useDefaults: false,
   coerceTypes: false,

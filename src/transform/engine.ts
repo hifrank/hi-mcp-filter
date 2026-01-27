@@ -10,12 +10,12 @@ export class TransformationPipeline {
       .sort((a, b) => (a.order || 0) - (b.order || 0));
   }
 
-  async execute(data: unknown): Promise<unknown> {
+  execute(data: unknown): unknown {
     let result = data;
     const executor = new TransformationExecutor();
 
     for (const rule of this.rules) {
-      const transformResult = await executor.execute(result, rule.expression, rule.onError);
+      const transformResult = executor.execute(result, rule.expression, rule.onError);
 
       if (transformResult.success) {
         result = transformResult.data;
@@ -36,7 +36,7 @@ export class TransformationEngine {
     this.pipeline = new TransformationPipeline(ruleConfigs);
   }
 
-  async transformResponse(data: unknown): Promise<unknown> {
+  transformResponse(data: unknown): unknown {
     return this.pipeline.execute(data);
   }
 

@@ -8,10 +8,10 @@ export class FilterEngine {
     this.compositionEngine = new FilterCompositionEngine(ruleConfigs);
   }
 
-  async evaluateResponse(data: unknown): Promise<{
+  evaluateResponse(data: unknown): {
     allow: boolean;
     reasons: string[];
-  }> {
+  } {
     return this.compositionEngine.evaluate(data);
   }
 

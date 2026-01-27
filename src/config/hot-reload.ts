@@ -15,15 +15,15 @@ export class ConfigHotReloadManager {
     this.swap = new AtomicConfigSwap();
   }
 
-  async initialize(): Promise<void> {
+  initialize(): void {
     try {
       // Load initial config
       const initialConfig = loadConfig(this.configFilePath);
-      await this.swap.swap(initialConfig);
+      this.swap.swap(initialConfig);
 
       // Setup file watcher
-      this.watcher = new ConfigWatcher(1000, async (filePath) => {
-        await this.handleConfigChange(filePath);
+      this.watcher = new ConfigWatcher(1000, (filePath) => {
+        this.handleConfigChange(filePath);
       });
 
       this.watcher.watch(this.configFilePath);
@@ -34,7 +34,7 @@ export class ConfigHotReloadManager {
     }
   }
 
-  private async handleConfigChange(filePath: string): Promise<void> {
+  private handleConfigChange(filePath: string): void {
     if (this.isReloading) {
       this.logger.debug('Config reload already in progress, skipping');
       return;
@@ -45,7 +45,7 @@ export class ConfigHotReloadManager {
     try {
       this.logger.info('Reloading config from file', { filePath });
       const newConfig = loadConfig(filePath);
-      const success = await this.swap.swap(newConfig);
+      const success = this.swap.swap(newConfig);
 
       if (success) {
         this.logger.info('Config reloaded successfully');
@@ -63,7 +63,7 @@ export class ConfigHotReloadManager {
     return this.swap.getCurrent();
   }
 
-  async updateConfig(newConfig: ProxyConfig): Promise<boolean> {
+  updateConfig(newConfig: unknown): boolean {
     return this.swap.swap(newConfig);
   }
 

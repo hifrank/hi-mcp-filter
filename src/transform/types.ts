@@ -14,11 +14,11 @@ export interface TransformationResult {
 }
 
 export class TransformationExecutor {
-  async execute(
+  execute(
     data: unknown,
     _expression: string,
     onError: 'skip' | 'passthrough' | 'fail' = 'passthrough'
-  ): Promise<TransformationResult> {
+  ): TransformationResult {
     try {
       // Placeholder: In real implementation, use JSONata
       // For now, just return the data unchanged

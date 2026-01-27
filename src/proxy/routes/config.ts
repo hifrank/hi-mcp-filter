@@ -2,10 +2,10 @@ import { FastifyInstance } from 'fastify';
 import { getLogger } from '../../common/logger';
 import { ConfigHotReloadManager } from '../../config/hot-reload';
 
-export async function registerConfigManagementRoutes(
+export function registerConfigManagementRoutes(
   app: FastifyInstance,
   reloadManager: ConfigHotReloadManager
-): Promise<void> {
+): void {
   const logger = getLogger();
 
   // GET /config - Retrieve current configuration
@@ -39,7 +39,7 @@ export async function registerConfigManagementRoutes(
   app.post<{ Body: unknown; Reply: unknown }>('/config', async (request, reply) => {
     try {
       const newConfig = request.body;
-      const success = await reloadManager.updateConfig(newConfig as any);
+      const success = reloadManager.updateConfig(newConfig);
 
       if (!success) {
         return reply.status(400).send({

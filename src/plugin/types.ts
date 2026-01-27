@@ -1,8 +1,10 @@
+import type { ILogger } from '../common/logger';
+
 export interface PluginContext {
   request: unknown;
   response: unknown;
-  logger: any;
-  config: any;
+  logger: ILogger;
+  config: Record<string, unknown>;
 }
 
 export interface FilterResult {
@@ -27,25 +29,35 @@ export interface PluginConfig {
   timeout?: number;
 }
 
-export type PluginFunction = (context: PluginContext) => Promise<any>;
+export type PluginFunction<T = unknown> = (context: PluginContext) => Promise<T>;
 
 export class PluginLoader {
   async loadPlugin(filePath: string): Promise<PluginInterface> {
     try {
-      const module = await import(filePath);
-      const plugin = module.default || module;
+      const importedModule: unknown = await import(filePath);
+      const pluginCandidate = (importedModule as { default?: unknown }).default ?? importedModule;
 
-      if (!plugin.name || !plugin.version) {
+      if (!this.isPlugin(pluginCandidate)) {
         throw new Error('Plugin must export name and version');
       }
 
-      return plugin as PluginInterface;
+      return pluginCandidate;
     } catch (error) {
-      throw new Error(`Failed to load plugin from ${filePath}: ${error}`);
+      throw new Error(`Failed to load plugin from ${filePath}: ${String(error)}`);
     }
   }
 
-  async validatePlugin(plugin: PluginInterface): Promise<boolean> {
+  validatePlugin(plugin: PluginInterface): boolean {
+    return this.isPlugin(plugin);
+  }
+
+  private isPlugin(candidate: unknown): candidate is PluginInterface {
+    if (!candidate || typeof candidate !== 'object') {
+      return false;
+    }
+
+    const plugin = candidate as Partial<PluginInterface>;
+
     if (!plugin.name || !plugin.version) {
       return false;
     }

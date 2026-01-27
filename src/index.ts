@@ -1,4 +1,4 @@
-import Fastify from 'fastify';
+import fastify from 'fastify';
 import { getLogger } from './common/logger';
 import { ConfigHotReloadManager } from './config/hot-reload';
 import { setupTracingHeaders } from './proxy/middleware/tracing';
@@ -14,10 +14,10 @@ async function main(): Promise<void> {
     // Load configuration
     const configFile = process.env.CONFIG_FILE || './config/default.json';
     const reloadManager = new ConfigHotReloadManager(configFile);
-    await reloadManager.initialize();
+    reloadManager.initialize();
 
     // Create Fastify app
-    const app = Fastify({
+    const app = fastify({
       logger: false, // Use Pino logger instead
       requestIdHeader: 'x-request-id',
       disableRequestLogging: false,
@@ -27,16 +27,16 @@ async function main(): Promise<void> {
     setupTracingHeaders(app);
 
     // Setup health endpoint
-    app.get('/health', async () => ({
+    app.get('/health', () => ({
       status: 'ok',
       timestamp: new Date().toISOString(),
       uptime: process.uptime(),
     }));
 
     // Setup management routes
-    await registerMetricsRoute(app);
-    await registerConfigManagementRoutes(app, reloadManager);
-    await registerProxyRoutes(app, reloadManager);
+    registerMetricsRoute(app);
+    registerConfigManagementRoutes(app, reloadManager);
+    registerProxyRoutes(app, reloadManager);
 
     // Setup graceful shutdown
     const shutdown = new GracefulShutdown();
@@ -60,4 +60,4 @@ async function main(): Promise<void> {
   }
 }
 
-main();
+void main();

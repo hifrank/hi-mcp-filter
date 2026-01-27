@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-floating-promises */
 import { FastifyRequest, FastifyReply, FastifyInstance } from 'fastify';
 import { getLogger } from '../../common/logger';
 import type { MCPResponse } from '../../mcp/validator';
@@ -12,10 +13,10 @@ export interface ProxyRequestBody {
   params?: Record<string, unknown>;
 }
 
-export async function registerProxyRoutes(
+export function registerProxyRoutes(
   app: FastifyInstance,
   reloadManager: ConfigHotReloadManager
-): Promise<void> {
+): void {
   const logger = getLogger();
   const forwarder = new RequestForwarder();
 
@@ -80,14 +81,19 @@ export async function registerProxyRoutes(
           response = await forwarder.forwardRequest(server.url, body, server.timeout || 30000);
         }
 
-        const latencyMs = Date.now() - startTime;
-        return reply
-          .header('X-Proxy-Latency-Ms', latencyMs.toString())
-          .header('X-Proxy-Filtered', 'false')
-          .header('X-Proxy-Transformed', 'false')
-          .header('X-Proxy-Transport', actualTransport)
-          .code(200)
-          .send(response);
+        const headers: Record<string, string> = {
+          'X-Proxy-Latency-Ms': (Date.now() - startTime).toString(),
+          'X-Proxy-Filtered': 'false',
+          'X-Proxy-Transformed': 'false',
+          'X-Proxy-Transport': actualTransport,
+        };
+
+        for (const [k, v] of Object.entries(headers)) {
+          reply.header(k, v);
+        }
+        // eslint-disable-next-line @typescript-eslint/no-floating-promises
+        void reply.send(response);
+        return;
       } catch (error) {
         const latencyMs = Date.now() - startTime;
         

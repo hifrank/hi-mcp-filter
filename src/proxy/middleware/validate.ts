@@ -3,11 +3,10 @@ import { validateMCPResponse } from '../../mcp/validator';
 import { getLogger } from '../../common/logger';
 import { ValidationError } from '../../common/errors';
 
-export async function validateResponse(
+export function validateResponse(
   request: FastifyRequest,
-  _reply: unknown,
   responseData: unknown
-): Promise<void> {
+): void {
   const logger = getLogger();
 
   const result = validateMCPResponse(responseData);

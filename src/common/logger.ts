@@ -31,12 +31,16 @@ export function createLogger(config: LoggerConfig): ILogger {
         }
       : undefined;
 
+  const destination: pino.DestinationStream | undefined = transport
+    ? (pino.transport(transport) as pino.DestinationStream)
+    : undefined;
+
   pinoInstance = pino(
     {
       level: config.level,
       name: config.name,
     },
-    transport ? pino.transport(transport) : undefined
+    destination
   );
 
   return {

@@ -1,9 +1,11 @@
 export interface Histogram {
   observe(value: number, labels?: Record<string, string>): void;
+  getCount(labels?: Record<string, string>): number;
 }
 
 export interface Counter {
   inc(labels?: Record<string, string>, value?: number): void;
+  getValue(labels?: Record<string, string>): number;
 }
 
 export interface MetricsCollector {
@@ -19,6 +21,9 @@ export function createMetricsCollector(): MetricsCollector {
   const histograms = new Map<string, { values: number[] }>();
   const counters = new Map<string, number>();
 
+  const formatKey = (name: string, labels?: Record<string, string>): string =>
+    labels ? `${name}:${JSON.stringify(labels)}` : name;
+
   const createHistogram = (name: string): Histogram => {
     if (!histograms.has(name)) {
       histograms.set(name, { values: [] });
@@ -26,11 +31,16 @@ export function createMetricsCollector(): MetricsCollector {
 
     return {
       observe: (value: number, labels?: Record<string, string>) => {
-        const key = labels ? `${name}:${JSON.stringify(labels)}` : name;
+        const key = formatKey(name, labels);
         if (!histograms.has(key)) {
           histograms.set(key, { values: [] });
         }
         histograms.get(key)?.values.push(value);
+      },
+      getCount: (labels?: Record<string, string>) => {
+        const key = formatKey(name, labels);
+        const record = histograms.get(key);
+        return record?.values.length ?? 0;
       },
     };
   };
@@ -42,9 +52,13 @@ export function createMetricsCollector(): MetricsCollector {
 
     return {
       inc: (labels?: Record<string, string>, value?: number) => {
-        const key = labels ? `${name}:${JSON.stringify(labels)}` : name;
+        const key = formatKey(name, labels);
         const current = counters.get(key) || 0;
         counters.set(key, current + (value || 1));
+      },
+      getValue: (labels?: Record<string, string>) => {
+        const key = formatKey(name, labels);
+        return counters.get(key) ?? 0;
       },
     };
   };

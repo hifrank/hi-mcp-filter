@@ -34,8 +34,11 @@ export class FilterRuleMatcher {
     const { field, operator, value } = this.rule.condition;
 
     try {
-      const results = JSONPath({ path: field, json: data as any });
-      const resultArray = Array.isArray(results) ? results : [results];
+      const results: unknown = JSONPath({
+        path: field,
+        json: data as null | boolean | number | string | Record<string, unknown> | unknown[],
+      });
+      const resultArray: unknown[] = Array.isArray(results) ? results : [results];
 
       if (resultArray.length === 0) {
         return operator === 'not' || operator === 'exists';

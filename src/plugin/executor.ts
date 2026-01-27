@@ -20,15 +20,19 @@ export class PluginExecutor {
 
     for (let attempt = 0; attempt < maxRetries; attempt++) {
       try {
-        const result = await Promise.race([
-          plugin.filter(context),
-          new Promise((_, reject) =>
-            setTimeout(() => reject(new Error('Plugin timeout')), timeout)
-          ),
-        ]);
+        const { promise: timeoutPromise, cancel } = this.createTimeoutPromise(timeout);
 
-        this.metrics.pluginCount.inc();
-        return result as { action: 'allow' | 'drop'; reason: string };
+        try {
+          const result = await Promise.race([
+            plugin.filter(context),
+            timeoutPromise,
+          ]);
+
+          this.metrics.pluginCount.inc();
+          return result as { action: 'allow' | 'drop'; reason: string };
+        } finally {
+          cancel();
+        }
       } catch (error) {
         this.logger.warn(`Plugin filter failed (attempt ${attempt + 1}/${maxRetries})`, {
           plugin: config.name,
@@ -60,12 +64,16 @@ export class PluginExecutor {
     const timeout = config.timeout || 5000;
 
     try {
-      return await Promise.race([
-        plugin.transform(context),
-        new Promise((_, reject) =>
-          setTimeout(() => reject(new Error('Plugin timeout')), timeout)
-        ),
-      ]);
+      const { promise: timeoutPromise, cancel } = this.createTimeoutPromise(timeout);
+
+      try {
+        return await Promise.race([
+          plugin.transform(context),
+          timeoutPromise,
+        ]);
+      } finally {
+        cancel();
+      }
     } catch (error) {
       this.logger.error('Plugin transform failed', {
         plugin: config.name,
@@ -78,5 +86,22 @@ export class PluginExecutor {
       // fail-open
       return context.response;
     }
+  }
+
+  private createTimeoutPromise(timeout: number): { promise: Promise<never>; cancel: () => void } {
+    let timer: NodeJS.Timeout | undefined;
+
+    const promise = new Promise<never>((_resolve, reject) => {
+      timer = setTimeout(() => reject(new Error('Plugin timeout')), timeout);
+    });
+
+    return {
+      promise,
+      cancel: () => {
+        if (timer) {
+          clearTimeout(timer);
+        }
+      },
+    };
   }
 }
