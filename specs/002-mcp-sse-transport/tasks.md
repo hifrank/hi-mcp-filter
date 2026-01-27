@@ -17,9 +17,9 @@
 
 **Purpose**: Project initialization and dependency setup
 
-- [ ] T001 Install eventsource-parser dependency: `npm install eventsource-parser`
-- [ ] T002 [P] Create SSE types file in src/types/sse.ts
-- [ ] T003 [P] Update gitignore if needed for SSE-specific artifacts
+- [X] T001 Install eventsource-parser dependency: `npm install eventsource-parser`
+- [X] T002 [P] Create SSE types file in src/types/sse.ts
+- [X] T003 [P] Update gitignore if needed for SSE-specific artifacts
 
 ---
 
@@ -29,12 +29,12 @@
 
 **⚠️ CRITICAL**: No user story implementation can begin until this phase is complete
 
-- [ ] T004 Extend MCPServerConfig type in src/types/config.ts with transport field
-- [ ] T005 Extend MCPServerConfig type in src/types/config.ts with sseOptions field
-- [ ] T006 Update config schema in src/config/schema.ts to validate transport field
-- [ ] T007 Update config schema in src/config/schema.ts to validate sseOptions
-- [ ] T008 [P] Update config validator in src/config/validator.ts with transport enum validation
-- [ ] T009 [P] Update config validator in src/config/validator.ts with sseBufferSize range validation
+- [X] T004 Extend MCPServerConfig type in src/types/config.ts with transport field
+- [X] T005 Extend MCPServerConfig type in src/types/config.ts with sseOptions field
+- [X] T006 Update config schema in src/config/schema.ts to validate transport field
+- [X] T007 Update config schema in src/config/schema.ts to validate sseOptions
+- [X] T008 [P] Update config validator in src/config/validator.ts with transport enum validation
+- [X] T009 [P] Update config validator in src/config/validator.ts with sseBufferSize range validation
 
 **Checkpoint**: Foundation ready - user story implementation can now begin in parallel
 
@@ -48,29 +48,29 @@
 
 ### Implementation for User Story 1
 
-- [ ] T010 [P] [US1] Create SSEEvent interface in src/types/sse.ts
-- [ ] T011 [P] [US1] Create SSEConnection interface in src/types/sse.ts
-- [ ] T012 [US1] Implement SSEParser class in src/proxy/sse-parser.ts using eventsource-parser
-- [ ] T013 [US1] Add parseSSEStream method to SSEParser in src/proxy/sse-parser.ts
-- [ ] T014 [US1] Add extractJSONRPC method to SSEParser in src/proxy/sse-parser.ts
-- [ ] T015 [US1] Add event buffering logic to SSEParser in src/proxy/sse-parser.ts
-- [ ] T016 [US1] Add multi-line data field handling to SSEParser in src/proxy/sse-parser.ts
-- [ ] T017 [US1] Extend RequestForwarder in src/proxy/forwarder.ts with SSE transport detection
-- [ ] T018 [US1] Add forwardSSE method to RequestForwarder in src/proxy/forwarder.ts
-- [ ] T019 [US1] Integrate SSEParser into forwardSSE method in src/proxy/forwarder.ts
-- [ ] T020 [US1] Add SSE parsing error handling in src/proxy/forwarder.ts (return 502 on parse error)
-- [ ] T021 [US1] Add logging for SSE connection lifecycle in src/proxy/forwarder.ts
-- [ ] T022 [US1] Update proxy route handler in src/proxy/routes/proxy.ts to use forwardSSE when transport is SSE
+- [X] T010 [P] [US1] Create SSEEvent interface in src/types/sse.ts
+- [X] T011 [P] [US1] Create SSEConnection interface in src/types/sse.ts
+- [X] T012 [US1] Implement SSEParser class in src/proxy/sse-parser.ts using eventsource-parser
+- [X] T013 [US1] Add parseSSEStream method to SSEParser in src/proxy/sse-parser.ts
+- [X] T014 [US1] Add extractJSONRPC method to SSEParser in src/proxy/sse-parser.ts
+- [X] T015 [US1] Add event buffering logic to SSEParser in src/proxy/sse-parser.ts
+- [X] T016 [US1] Add multi-line data field handling to SSEParser in src/proxy/sse-parser.ts
+- [X] T017 [US1] Extend RequestForwarder in src/proxy/forwarder.ts with SSE transport detection
+- [X] T018 [US1] Add forwardSSE method to RequestForwarder in src/proxy/forwarder.ts
+- [X] T019 [US1] Integrate SSEParser into forwardSSE method in src/proxy/forwarder.ts
+- [X] T020 [US1] Add SSE parsing error handling in src/proxy/forwarder.ts (return 502 on parse error)
+- [X] T021 [US1] Add logging for SSE connection lifecycle in src/proxy/forwarder.ts
+- [X] T022 [US1] Update proxy route handler in src/proxy/routes/proxy.ts to use forwardSSE when transport is SSE
 
 ### Tests for User Story 1
 
-- [ ] T023 [P] [US1] Unit test SSEParser with valid SSE stream in tests/unit/sse-parser.test.ts
-- [ ] T024 [P] [US1] Unit test SSEParser with invalid JSON in data field in tests/unit/sse-parser.test.ts
-- [ ] T025 [P] [US1] Unit test SSEParser with multi-line data fields in tests/unit/sse-parser.test.ts
-- [ ] T026 [P] [US1] Unit test SSEParser event filtering (message vs close) in tests/unit/sse-parser.test.ts
-- [ ] T027 [P] [US1] Contract test for SSE format compliance in tests/contract/sse-format.test.ts
-- [ ] T028 [US1] Integration test proxy with Azure APIM SSE endpoint in tests/integration/azure-apim.test.ts
-- [ ] T029 [US1] Integration test SSE parsing error handling (502 response) in tests/integration/sse-proxy.test.ts
+- [X] T023 [P] [US1] Unit test SSEParser with valid SSE stream in tests/unit/sse-parser.test.ts
+- [X] T024 [P] [US1] Unit test SSEParser with invalid JSON in data field in tests/unit/sse-parser.test.ts
+- [X] T025 [P] [US1] Unit test SSEParser with multi-line data fields in tests/unit/sse-parser.test.ts
+- [X] T026 [P] [US1] Unit test SSEParser event filtering (message vs close) in tests/unit/sse-parser.test.ts
+- [X] T027 [P] [US1] Contract test for SSE format compliance in tests/contract/sse-format.test.ts
+- [X] T028 [US1] Integration test proxy with Azure APIM SSE endpoint in tests/integration/azure-apim.test.ts
+- [X] T029 [US1] Integration test SSE parsing error handling (502 response) in tests/integration/sse-proxy.test.ts
 
 **Checkpoint**: At this point, User Story 1 should be fully functional - proxy can handle SSE-based MCP servers
 
@@ -84,25 +84,25 @@
 
 ### Implementation for User Story 2
 
-- [ ] T030 [P] [US2] Create transport detection module in src/proxy/transport.ts
-- [ ] T031 [US2] Implement detectTransport function in src/proxy/transport.ts (checks Content-Type header)
-- [ ] T032 [US2] Implement getTransportForServer function in src/proxy/transport.ts (reads config transport field)
-- [ ] T033 [US2] Update RequestForwarder in src/proxy/forwarder.ts to call transport detection
-- [ ] T034 [US2] Add transport routing logic in src/proxy/forwarder.ts (if SSE → forwardSSE, else → forwardHTTP)
-- [ ] T035 [US2] Add X-Proxy-Transport header to responses in src/proxy/forwarder.ts
-- [ ] T036 [US2] Update proxy route handler in src/proxy/routes/proxy.ts to support auto-detection
-- [ ] T037 [US2] Update config/azure-mcp.json to set transport: "sse"
-- [ ] T038 [US2] Update config/default.json with SSE configuration example
+- [X] T030 [P] [US2] Create transport detection module in src/proxy/transport.ts
+- [X] T031 [US2] Implement detectTransport function in src/proxy/transport.ts (checks Content-Type header)
+- [X] T032 [US2] Implement getTransportForServer function in src/proxy/transport.ts (reads config transport field)
+- [X] T033 [US2] Update RequestForwarder in src/proxy/forwarder.ts to call transport detection
+- [X] T034 [US2] Add transport routing logic in src/proxy/forwarder.ts (if SSE → forwardSSE, else → forwardHTTP)
+- [X] T035 [US2] Add X-Proxy-Transport header to responses in src/proxy/forwarder.ts
+- [X] T036 [US2] Update proxy route handler in src/proxy/routes/proxy.ts to support auto-detection
+- [X] T037 [US2] Update config/azure-mcp.json to set transport: "sse"
+- [X] T038 [US2] Update config/default.json with SSE configuration example
 
 ### Tests for User Story 2
 
-- [ ] T039 [P] [US2] Unit test detectTransport with text/event-stream header in tests/unit/transport.test.ts
-- [ ] T040 [P] [US2] Unit test detectTransport with application/json header in tests/unit/transport.test.ts
-- [ ] T041 [P] [US2] Unit test getTransportForServer with explicit transport config in tests/unit/transport.test.ts
-- [ ] T042 [P] [US2] Unit test getTransportForServer with auto transport config in tests/unit/transport.test.ts
-- [ ] T043 [US2] Integration test mixed HTTP and SSE servers in same proxy in tests/integration/sse-proxy.test.ts
-- [ ] T044 [US2] Integration test auto-detection with SSE server in tests/integration/sse-proxy.test.ts
-- [ ] T045 [US2] Integration test auto-detection with HTTP server in tests/integration/sse-proxy.test.ts
+- [X] T039 [P] [US2] Unit test detectTransport with text/event-stream header in tests/unit/transport.test.ts
+- [X] T040 [P] [US2] Unit test detectTransport with application/json header in tests/unit/transport.test.ts
+- [X] T041 [P] [US2] Unit test getTransportForServer with explicit transport config in tests/unit/transport.test.ts
+- [X] T042 [P] [US2] Unit test getTransportForServer with auto transport config in tests/unit/transport.test.ts
+- [X] T043 [US2] Integration test mixed HTTP and SSE servers in same proxy in tests/integration/sse-proxy.test.ts
+- [X] T044 [US2] Integration test auto-detection with SSE server in tests/integration/sse-proxy.test.ts
+- [X] T045 [US2] Integration test auto-detection with HTTP server in tests/integration/sse-proxy.test.ts
 
 **Checkpoint**: Both User Stories 1 AND 2 are functional - proxy supports both transport types
 
@@ -116,20 +116,20 @@
 
 ### Implementation for User Story 3
 
-- [ ] T046 [P] [US3] Add timeout enforcement using AbortController in src/proxy/sse-parser.ts
-- [ ] T047 [US3] Add timeout error handling in src/proxy/forwarder.ts (return 504 on timeout)
-- [ ] T048 [US3] Add SSE connection cleanup on timeout in src/proxy/sse-parser.ts
-- [ ] T049 [US3] Add graceful shutdown handling for active SSE connections in src/index.ts
-- [ ] T050 [US3] Add SIGTERM handler to close SSE connections in src/index.ts
-- [ ] T051 [US3] Add timeout accuracy logging in src/proxy/forwarder.ts
+- [X] T046 [P] [US3] Add timeout enforcement using AbortController in src/proxy/sse-parser.ts
+- [X] T047 [US3] Add timeout error handling in src/proxy/forwarder.ts (return 504 on timeout)
+- [X] T048 [US3] Add SSE connection cleanup on timeout in src/proxy/sse-parser.ts
+- [X] T049 [US3] Add graceful shutdown handling for active SSE connections in src/index.ts
+- [X] T050 [US3] Add SIGTERM handler to close SSE connections in src/index.ts
+- [X] T051 [US3] Add timeout accuracy logging in src/proxy/forwarder.ts
 
 ### Tests for User Story 3
 
-- [ ] T052 [P] [US3] Unit test SSE timeout with AbortController in tests/unit/sse-parser.test.ts
-- [ ] T053 [P] [US3] Unit test timeout error response (504) in tests/unit/sse-parser.test.ts
-- [ ] T054 [US3] Integration test SSE timeout handling in tests/integration/sse-proxy.test.ts
-- [ ] T055 [US3] Integration test graceful shutdown with active SSE connections in tests/integration/sse-proxy.test.ts
-- [ ] T056 [US3] Performance test timeout accuracy (±5% of configured value) in tests/integration/sse-proxy.test.ts
+- [X] T052 [P] [US3] Unit test SSE timeout with AbortController in tests/unit/sse-parser.test.ts
+- [X] T053 [P] [US3] Unit test timeout error response (504) in tests/unit/sse-parser.test.ts
+- [X] T054 [US3] Integration test SSE timeout handling in tests/integration/sse-proxy.test.ts
+- [X] T055 [US3] Integration test graceful shutdown with active SSE connections in tests/integration/sse-proxy.test.ts
+- [X] T056 [US3] Performance test timeout accuracy (±5% of configured value) in tests/integration/sse-proxy.test.ts
 
 **Checkpoint**: All P1 and P2 user stories are functional - production-ready for SSE support
 

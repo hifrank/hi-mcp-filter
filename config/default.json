@@ -8,7 +8,20 @@
     {
       "id": "example-server",
       "url": "http://localhost:3001",
-      "timeout": 30000
+      "timeout": 30000,
+      "transport": "auto",
+      "comment": "Transport auto-detects HTTP or SSE based on Content-Type header"
+    },
+    {
+      "id": "sse-server-example",
+      "url": "https://example.com/mcp",
+      "timeout": 30000,
+      "transport": "sse",
+      "sseOptions": {
+        "sseEventFilter": ["message"],
+        "sseBufferSize": 10
+      },
+      "comment": "Example SSE server configuration"
     }
   ],
   "filterRules": [

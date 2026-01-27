@@ -13,6 +13,13 @@ export interface MCPServer {
   id: string;
   url: string;
   timeout?: number;
+  // SSE Transport Support (Feature 002)
+  transport?: 'http' | 'sse' | 'auto';
+  sseOptions?: {
+    sseEventFilter?: string[];
+    sseBufferSize?: number;
+    sseStreamingMode?: boolean;
+  };
 }
 
 export interface FilterRule {

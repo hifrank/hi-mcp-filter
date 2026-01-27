@@ -1,0 +1,22 @@
+{
+  "server": {
+    "port": 8080,
+    "host": "0.0.0.0",
+    "requestTimeout": 30000
+  },
+  "mcpServers": [
+    {
+      "id": "azure-apim",
+      "url": "https://hifrankapim.azure-api.net/me/mcp",
+      "timeout": 30000,
+      "transport": "sse",
+      "sseOptions": {
+        "sseEventFilter": ["message"],
+        "sseBufferSize": 10
+      }
+    }
+  ],
+  "filterRules": [],
+  "transformationRules": [],
+  "plugins": []
+}

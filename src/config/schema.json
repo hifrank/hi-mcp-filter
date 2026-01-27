@@ -47,6 +47,38 @@
             "minimum": 1000,
             "default": 10000,
             "description": "Backend request timeout in milliseconds"
+          },
+          "transport": {
+            "type": "string",
+            "enum": ["http", "sse", "auto"],
+            "default": "auto",
+            "description": "Transport mode: http (JSON-RPC), sse (Server-Sent Events), or auto (detect from Content-Type)"
+          },
+          "sseOptions": {
+            "type": "object",
+            "properties": {
+              "sseEventFilter": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "minItems": 1,
+                "default": ["message"],
+                "description": "Event types to process (default: ['message'])"
+              },
+              "sseBufferSize": {
+                "type": "integer",
+                "minimum": 1,
+                "maximum": 1000,
+                "default": 10,
+                "description": "Maximum events to buffer before processing"
+              },
+              "sseStreamingMode": {
+                "type": "boolean",
+                "default": false,
+                "description": "Enable pass-through SSE streaming to client (P3 feature)"
+              }
+            }
           }
         }
       },

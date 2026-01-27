@@ -4,6 +4,7 @@ import { ConfigHotReloadManager } from './config/hot-reload';
 import { setupTracingHeaders } from './proxy/middleware/tracing';
 import { registerMetricsRoute } from './proxy/routes/metrics';
 import { registerConfigManagementRoutes } from './proxy/routes/config';
+import { registerProxyRoutes } from './proxy/routes/proxy';
 import { GracefulShutdown } from './proxy/shutdown';
 
 const logger = getLogger();
@@ -35,6 +36,7 @@ async function main(): Promise<void> {
     // Setup management routes
     await registerMetricsRoute(app);
     await registerConfigManagementRoutes(app, reloadManager);
+    await registerProxyRoutes(app, reloadManager);
 
     // Setup graceful shutdown
     const shutdown = new GracefulShutdown();
