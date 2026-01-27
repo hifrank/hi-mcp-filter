@@ -1,11 +1,11 @@
 import fs from 'fs';
-import Ajv from 'ajv';
+import AjvConstructor from 'ajv';
 import addFormats from 'ajv-formats';
 import { getLogger } from '../common/logger';
 import { ConfigError } from '../common/errors';
 import configSchema from './schema.json';
 
-const ajv = new Ajv({ strict: true });
+const ajv = new AjvConstructor({ strict: true });
 addFormats(ajv);
 const validateConfig = ajv.compile(configSchema);
 
@@ -84,9 +84,9 @@ export function loadConfig(filePath: string): ProxyConfig {
     }
 
     const content = fs.readFileSync(filePath, 'utf-8');
-    const config = JSON.parse(content) as unknown;
+    const parsedConfig = JSON.parse(content) as unknown;
 
-    const valid = validateConfig(config);
+    const valid = validateConfig(parsedConfig);
     if (!valid) {
       const errors = validateConfig.errors || [];
       const errorMessages = errors
@@ -95,15 +95,17 @@ export function loadConfig(filePath: string): ProxyConfig {
       throw new ConfigError(`Configuration validation failed: ${errorMessages}`);
     }
 
+    const config = parsedConfig as ProxyConfig;
+
     logger.info('Configuration loaded successfully', {
       filePath,
-      servers: (config as unknown as ProxyConfig).mcpServers?.length || 0,
-      filters: (config as unknown as ProxyConfig).filters?.length || 0,
-      transformations: (config as unknown as ProxyConfig).transformations?.length || 0,
-      plugins: (config as unknown as ProxyConfig).plugins?.length || 0,
+      servers: config.mcpServers?.length || 0,
+      filters: config.filters?.length || 0,
+      transformations: config.transformations?.length || 0,
+      plugins: config.plugins?.length || 0,
     });
 
-    return config as unknown as ProxyConfig;
+    return config;
   } catch (error) {
     if (error instanceof ConfigError) {
       throw error;

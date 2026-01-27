@@ -18,7 +18,7 @@ export class ConfigHotReloadManager {
   async initialize(): Promise<void> {
     try {
       // Load initial config
-      const initialConfig = await loadConfig(this.configFilePath);
+      const initialConfig = loadConfig(this.configFilePath);
       await this.swap.swap(initialConfig);
 
       // Setup file watcher
@@ -44,7 +44,7 @@ export class ConfigHotReloadManager {
 
     try {
       this.logger.info('Reloading config from file', { filePath });
-      const newConfig = await loadConfig(filePath);
+      const newConfig = loadConfig(filePath);
       const success = await this.swap.swap(newConfig);
 
       if (success) {

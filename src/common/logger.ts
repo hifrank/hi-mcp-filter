@@ -20,7 +20,7 @@ export interface ILogger {
 let pinoInstance: pino.Logger;
 
 export function createLogger(config: LoggerConfig): ILogger {
-  const transport =
+  const transport: pino.TransportSingleOptions | undefined =
     config.format === 'pretty'
       ? {
           target: 'pino-pretty',
