@@ -72,11 +72,11 @@ Some clients may prefer to receive SSE streams directly instead of converted JSO
 
 ### Edge Cases
 
-- What happens when SSE stream contains invalid JSON in `data:` field?
-- How does proxy handle SSE reconnection events (`event: error`, `event: retry`)?
-- What if SSE stream mixes `event: message` with other event types?
-- How does proxy behave if SSE server closes connection mid-stream?
-- What happens if client disconnects while proxy is reading SSE stream?
+- **Invalid JSON in SSE data field**: Proxy MUST return 502 Bad Gateway with error logged (covered by FR-010, tested in T024, T029)
+- **SSE reconnection events** (`event: error`, `event: retry`): Proxy ignores non-message events per FR-006 (tested in T026)
+- **Mixed event types**: Proxy filters events, processing only those in `sseEventFilter` config (default: ["message"]) - covered by FR-006 (tested in T026)
+- **Mid-stream connection close**: Proxy returns partial response if close event received, or timeout error if connection drops without close (covered by FR-008, FR-009)
+- **Client disconnect during SSE read**: Proxy terminates backend SSE connection and cleans up resources (covered by graceful shutdown in T049-T050)
 
 ## Requirements
 
@@ -96,17 +96,17 @@ Some clients may prefer to receive SSE streams directly instead of converted JSO
 
 ### Key Entities
 
-- **SSEResponse**: Represents a parsed SSE stream with events (type, data, id, retry)
-- **MCPServerConfig**: Extended with `transport` field ("http" | "sse" | "auto")
+- **SSEEvent**: Represents a single parsed SSE event with type, event name, data, id, and retry fields
+- **MCPServerConfig**: Extended with `transport` field ("http" | "sse" | "auto") and optional `sseOptions`
 - **SSEParser**: Component that reads SSE stream and extracts JSON-RPC messages
-- **SSEForwarder**: Variant of RequestForwarder that handles SSE backend communication
+- **RequestForwarder**: Extended with `forwardSSE` method to handle SSE backend communication alongside existing HTTP forwarding
 
 ## Success Criteria
 
 ### Measurable Outcomes
 
 - **SC-001**: Proxy successfully forwards requests to Azure APIM SSE MCP endpoint and returns valid JSON-RPC responses
-- **SC-002**: Proxy handles both HTTP and SSE transports in single deployment with <10ms additional latency for SSE parsing
+- **SC-002**: Proxy handles both HTTP and SSE transports in single deployment with <10ms additional latency for SSE parsing (measured as per-event parsing overhead, not including network I/O)
 - **SC-003**: SSE connections timeout within 5% of configured timeout value (e.g., 30s ± 1.5s)
 - **SC-004**: No memory leaks during 1000 sequential SSE requests (memory usage stable within 10MB)
 - **SC-005**: 100% of SSE parsing errors are logged with context (event data, line number, server ID)

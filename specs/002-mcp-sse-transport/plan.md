@@ -48,32 +48,42 @@ Add Server-Sent Events (SSE) transport support to MCP proxy, enabling proxying o
 - [x] Test cases specified: FR-009 (SSE parsing, timeout, error handling, auto-detection)
 - [x] Compliance: Full compliance (tests required for all FRs)
 
-### ✅ Principle III: Container-First Deployment
+### ✅ Principle III: Modular Architecture
 
-- [x] Container impact: No changes required (existing Dockerfile supports new dependencies)
-- [x] Config externalization: `MCPServerConfig.transport` and `sseOptions` in JSON config files
-- [x] Compliance: Full compliance (no Dockerfile changes needed)
+- [x] Clear module boundaries: SSEParser (parsing), transport.ts (detection), forwarder.ts (integration)
+- [x] Defined contracts: SSEEvent interface, SSETransportConfig schema, parseSSEStream/extractJSONRPC APIs
+- [x] Independent modules: SSEParser can be tested/used independently of forwarder
+- [x] Compliance: Full compliance (SSE components are modular with clear contracts)
 
-### ✅ Principle IV: Minimal Abstraction
+### ✅ Principle IV: MCP Protocol Compliance
 
-- [x] Direct library usage: `eventsource-parser` used directly, no custom SSE parser
-- [x] Essential state only: SSE connection state (CONNECTING → CONNECTED → CLOSED), event buffer
-- [x] Justification: Transport detection requires distinguishing HTTP vs SSE; buffering required by SSE protocol
-- [x] Compliance: Full compliance (no unnecessary abstractions)
+- [x] MCP JSON-RPC 2.0 format preserved: SSE transport extracts and returns standard MCP JSON-RPC messages
+- [x] Protocol testing: Integration tests verify MCP initialize/tools/list methods work through SSE transport
+- [x] Version compatibility: SSE parsing is transport-level only; MCP protocol version unchanged
+- [x] Compliance: Full compliance (SSE is transparent transport layer, MCP protocol unaffected)
 
 ### ✅ Principle V: Explicit Configuration
 
 - [x] Runtime config: `transport` field in `MCPServerConfig` (explicit "http"|"sse"|"auto")
 - [x] No magic defaults beyond standard practice: `transport: "auto"` for backward compatibility
+- [x] Environment-based overrides: MCP_TRANSPORT_OVERRIDE, MCP_SSE_BUFFER_SIZE documented
 - [x] Compliance: Full compliance (explicit transport configuration)
 
-### ✅ Principle VI: Fail-Fast Error Handling
+### ✅ Principle VI: Container-First Deployment
 
-- [x] Early validation: Config schema validation on startup (ajv), SSE format validation on first event
-- [x] Clear error messages: "Backend SSE stream error: Invalid JSON in data field", "SSE stream timeout after Xms"
-- [x] Compliance: Full compliance (502 on parse error, 504 on timeout)
+- [x] Container impact: No changes required (existing Dockerfile supports new dependencies)
+- [x] Config externalization: `MCPServerConfig.transport` and `sseOptions` in JSON config files
+- [x] Local Docker development: Works with existing docker-compose.yml, no special SSE configuration needed
+- [x] Health endpoints: Existing `/health` and `/metrics` endpoints expose SSE-specific metrics
+- [x] Compliance: Full compliance (no Dockerfile changes needed)
 
-### ✅ Principle VII: Observable Behavior
+### ✅ Principle VII: Mandatory Test Coverage per Iteration
+
+- [x] Unit tests: 15 unit tests across SSEParser, transport detection, config validation
+- [x] Integration tests: 5 integration tests for end-to-end SSE proxy behavior
+- [x] Contract tests: 2 contract tests for SSE format and MCP protocol compliance
+- [x] Test coverage target: Critical paths (SSE parsing, timeout, error handling) at 100%
+- [x] Compliance: Full compliance (22 test tasks out of 75 total = 29% test-to-implementation ratio)
 
 - [x] Logging strategy: SSE connection lifecycle (connect, first event, close, error), transport detection
 - [x] Metrics exposure: `sse_events_parsed_total`, `sse_parse_errors_total`, `sse_timeouts_total` (Prometheus)
