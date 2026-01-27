@@ -1,0 +1,40 @@
+[
+  {
+    "id": "filter-1",
+    "name": "Block dangerous tool",
+    "enabled": true,
+    "condition": {
+      "field": "$.result.content[0].name",
+      "operator": "equals",
+      "value": "dangerous_tool"
+    },
+    "action": "drop",
+    "composition": "NONE",
+    "priority": 1
+  },
+  {
+    "id": "filter-2",
+    "name": "Allow only success",
+    "enabled": true,
+    "condition": {
+      "field": "$.result.isError",
+      "operator": "equals",
+      "value": false
+    },
+    "action": "allow",
+    "composition": "NONE",
+    "priority": 2
+  },
+  {
+    "id": "filter-3",
+    "name": "Drop errors",
+    "enabled": false,
+    "condition": {
+      "field": "$.error",
+      "operator": "exists"
+    },
+    "action": "drop",
+    "composition": "NONE",
+    "priority": 3
+  }
+]

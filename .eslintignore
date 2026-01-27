@@ -1,0 +1,11 @@
+node_modules/
+dist/
+build/
+coverage/
+.nyc_output/
+*.min.js
+.tmp/
+tmp/
+temp/
+.DS_Store
+Thumbs.db

@@ -1,0 +1,27 @@
+{
+  "server": {
+    "port": 8080,
+    "host": "0.0.0.0"
+  },
+  "logging": {
+    "level": "info"
+  },
+  "mcpServers": [
+    {
+      "id": "default-server",
+      "url": "http://mcp-server:5000",
+      "timeout": 30000,
+      "retryPolicy": {
+        "maxRetries": 3,
+        "backoffMs": 100
+      }
+    }
+  ],
+  "filters": [],
+  "transformations": [],
+  "plugins": {
+    "enabled": true,
+    "directory": "/app/plugins",
+    "timeout": 5000
+  }
+}

@@ -1,0 +1,51 @@
+[
+  {
+    "id": "request-1",
+    "jsonrpc": "2.0",
+    "result": {
+      "content": [
+        {
+          "type": "text",
+          "text": "Hello, world!"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "id": "request-2",
+    "jsonrpc": "2.0",
+    "result": {
+      "content": [
+        {
+          "type": "tool_result",
+          "tool_use_id": "tool-123",
+          "content": "Tool execution result"
+        }
+      ],
+      "isError": false
+    }
+  },
+  {
+    "id": "request-3",
+    "jsonrpc": "2.0",
+    "error": {
+      "code": -32000,
+      "message": "Server error"
+    }
+  },
+  {
+    "id": "request-4",
+    "jsonrpc": "2.0",
+    "result": {
+      "content": [
+        {
+          "name": "dangerous_tool",
+          "type": "tool_use",
+          "id": "tool-456"
+        }
+      ],
+      "isError": false
+    }
+  }
+]

@@ -1,0 +1,26 @@
+[
+  {
+    "id": "transform-1",
+    "name": "Extract result content",
+    "enabled": true,
+    "expression": "$.result.content",
+    "order": 1,
+    "onError": "passthrough"
+  },
+  {
+    "id": "transform-2",
+    "name": "Add timestamp",
+    "enabled": true,
+    "expression": "$merge([., {\"timestamp\": $now()}])",
+    "order": 2,
+    "onError": "passthrough"
+  },
+  {
+    "id": "transform-3",
+    "name": "Redact api_key",
+    "enabled": true,
+    "expression": "$ | {\"**\":{\"*\": ($$.api_key ? undefined : $)}}")$",
+    "order": 3,
+    "onError": "skip"
+  }
+]

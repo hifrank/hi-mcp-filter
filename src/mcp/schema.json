@@ -1,0 +1,51 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MCP JSON-RPC 2.0 Response",
+  "description": "JSON-RPC 2.0 response from a Model Context Protocol server",
+  "type": "object",
+  "required": ["jsonrpc", "id"],
+  "additionalProperties": true,
+  "properties": {
+    "jsonrpc": {
+      "type": "string",
+      "enum": ["2.0"],
+      "description": "JSON-RPC protocol version"
+    },
+    "id": {
+      "description": "Request ID matching the original request"
+    },
+    "result": {
+      "type": "object",
+      "additionalProperties": true,
+      "description": "Successful response result"
+    },
+    "error": {
+      "type": "object",
+      "required": ["code", "message"],
+      "additionalProperties": true,
+      "description": "Error response",
+      "properties": {
+        "code": {
+          "type": "integer"
+        },
+        "message": {
+          "type": "string"
+        }
+      }
+    }
+  },
+  "anyOf": [
+    {
+      "required": ["result"],
+      "not": {
+        "required": ["error"]
+      }
+    },
+    {
+      "required": ["error"],
+      "not": {
+        "required": ["result"]
+      }
+    }
+  ]
+}

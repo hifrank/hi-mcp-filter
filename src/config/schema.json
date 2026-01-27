@@ -1,0 +1,213 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "MCP Filter Proxy Configuration",
+  "type": "object",
+  "required": ["server"],
+  "properties": {
+    "server": {
+      "type": "object",
+      "required": ["port"],
+      "properties": {
+        "port": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535,
+          "description": "Port to listen on"
+        },
+        "host": {
+          "type": "string",
+          "default": "0.0.0.0",
+          "description": "Host address to bind to"
+        },
+        "requestTimeout": {
+          "type": "integer",
+          "minimum": 1000,
+          "default": 30000,
+          "description": "Request timeout in milliseconds"
+        }
+      }
+    },
+    "mcpServers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "url"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique server identifier"
+          },
+          "url": {
+            "type": "string",
+            "format": "uri",
+            "description": "Backend MCP server URL"
+          },
+          "timeout": {
+            "type": "integer",
+            "minimum": 1000,
+            "default": 10000,
+            "description": "Backend request timeout in milliseconds"
+          }
+        }
+      },
+      "default": []
+    },
+    "filters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "condition", "action"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique filter rule ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable filter name"
+          },
+          "enabled": {
+            "type": "boolean",
+            "default": true
+          },
+          "condition": {
+            "type": "object",
+            "required": ["field", "operator", "value"],
+            "properties": {
+              "field": {
+                "type": "string",
+                "description": "JSONPath expression"
+              },
+              "operator": {
+                "type": "string",
+                "enum": ["equals", "contains", "matches", "exists", "not"]
+              },
+              "value": {}
+            }
+          },
+          "action": {
+            "type": "string",
+            "enum": ["allow", "drop"]
+          },
+          "composition": {
+            "type": "string",
+            "enum": ["AND", "OR", "NONE"],
+            "default": "NONE"
+          },
+          "priority": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 0
+          }
+        }
+      },
+      "default": []
+    },
+    "transformations": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "expression"],
+        "properties": {
+          "id": {
+            "type": "string",
+            "description": "Unique transformation ID"
+          },
+          "name": {
+            "type": "string",
+            "description": "Human-readable transformation name"
+          },
+          "enabled": {
+            "type": "boolean",
+            "default": true
+          },
+          "expression": {
+            "type": "string",
+            "description": "JSONata expression"
+          },
+          "order": {
+            "type": "integer",
+            "minimum": 0,
+            "default": 0
+          },
+          "onError": {
+            "type": "string",
+            "enum": ["skip", "passthrough", "fail"],
+            "default": "passthrough"
+          }
+        }
+      },
+      "default": []
+    },
+    "plugins": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["name", "filePath"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "description": "Plugin identifier"
+          },
+          "version": {
+            "type": "string",
+            "description": "Plugin version"
+          },
+          "filePath": {
+            "type": "string",
+            "description": "Path to plugin JavaScript file"
+          },
+          "enabled": {
+            "type": "boolean",
+            "default": true
+          },
+          "errorBehavior": {
+            "type": "string",
+            "enum": ["fail-open", "fail-secure", "retry"],
+            "default": "fail-open"
+          },
+          "retryAttempts": {
+            "type": "integer",
+            "minimum": 1,
+            "default": 3
+          },
+          "timeout": {
+            "type": "integer",
+            "minimum": 100,
+            "default": 5000
+          }
+        }
+      },
+      "default": []
+    },
+    "logging": {
+      "type": "object",
+      "properties": {
+        "level": {
+          "type": "string",
+          "enum": ["trace", "debug", "info", "warn", "error"],
+          "default": "info"
+        },
+        "format": {
+          "type": "string",
+          "enum": ["json", "pretty"],
+          "default": "json"
+        }
+      }
+    },
+    "hotReload": {
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "default": true
+        },
+        "debounceMs": {
+          "type": "integer",
+          "minimum": 100,
+          "default": 1000
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "server": {
+    "port": 3000,
+    "host": "0.0.0.0",
+    "requestTimeout": 30000
+  },
+  "mcpServers": [
+    {
+      "id": "example-server",
+      "url": "http://localhost:3001",
+      "timeout": 30000
+    }
+  ],
+  "filterRules": [
+    {
+      "id": "example-filter",
+      "name": "Example filter for demonstration",
+      "enabled": true,
+      "condition": {
+        "type": "jsonpath",
+        "path": "$.method",
+        "operator": "equals",
+        "value": "tools/list"
+      },
+      "action": {
+        "type": "modify",
+        "operations": [
+          {
+            "type": "add",
+            "path": "$.result.filtered",
+            "value": true
+          }
+        ]
+      }
+    }
+  ]
+}
