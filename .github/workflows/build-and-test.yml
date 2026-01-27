@@ -2,7 +2,7 @@ name: Build and Test
 
 on:
   push:
-    branches: [main, develop]
+    branches: [main, develop, '**-mcp-**']
   pull_request:
     branches: [main, develop]
 
@@ -34,11 +34,8 @@ jobs:
     - name: Build TypeScript
       run: npm run build
 
-    - name: Run unit tests
-      run: npm run test:unit
-
-    - name: Run integration tests
-      run: npm run test:integration
+    - name: Run tests
+      run: npm test
 
     - name: Generate coverage report
       run: npm run test:coverage
