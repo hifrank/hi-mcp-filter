@@ -171,9 +171,9 @@
 - [X] T070 [P] Add SSE examples to examples/ directory
 - [X] T071 Update API documentation with transport configuration
 - [X] T072 Run full test suite and verify all 47 existing tests still pass
-- [ ] T073 Verify backward compatibility: HTTP-only configs work without changes
-- [ ] T074 Performance test: verify SSE adds <10ms to p95 latency
-- [ ] T075 Memory leak test: 1000 sequential SSE requests with stable memory usage
+- [X] T073 Verify backward compatibility: HTTP-only configs work without changes
+- [X] T074 Performance test: verify SSE adds <10ms to p95 latency
+- [X] T075 Memory leak test: 1000 sequential SSE requests with stable memory usage
 
 ---
 
