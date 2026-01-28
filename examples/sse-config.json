@@ -1,0 +1,22 @@
+{
+  "server": {
+    "port": 8080,
+    "host": "0.0.0.0",
+    "requestTimeout": 30000
+  },
+  "mcpServers": [
+    {
+      "id": "azure-apim",
+      "url": "https://example.azure-api.net/me/mcp",
+      "transport": "sse",
+      "timeout": 30000,
+      "sseOptions": {
+        "sseEventFilter": ["message"],
+        "sseBufferSize": 10
+      }
+    }
+  ],
+  "filterRules": [],
+  "transformRules": [],
+  "plugins": []
+}

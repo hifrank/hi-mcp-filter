@@ -15,6 +15,9 @@ export interface MetricsCollector {
   transformCount: Counter;
   pluginCount: Counter;
   errorCount: Counter;
+  sseEventsParsed: Counter;
+  sseParseErrors: Counter;
+  sseTimeouts: Counter;
 }
 
 export function createMetricsCollector(): MetricsCollector {
@@ -70,6 +73,9 @@ export function createMetricsCollector(): MetricsCollector {
     transformCount: createCounter('transform_count'),
     pluginCount: createCounter('plugin_count'),
     errorCount: createCounter('error_count'),
+    sseEventsParsed: createCounter('sse_events_parsed_total'),
+    sseParseErrors: createCounter('sse_parse_errors_total'),
+    sseTimeouts: createCounter('sse_timeouts_total'),
   };
 }
 

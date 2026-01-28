@@ -15,6 +15,9 @@ export function registerMetricsRoute(app: FastifyInstance): void {
       const transformTotal = metrics.transformCount.getValue();
       const pluginTotal = metrics.pluginCount.getValue();
       const errorTotal = metrics.errorCount.getValue();
+      const sseEventsParsedTotal = metrics.sseEventsParsed.getValue();
+      const sseParseErrorsTotal = metrics.sseParseErrors.getValue();
+      const sseTimeoutsTotal = metrics.sseTimeouts.getValue();
 
       const prometheusMetrics = `# HELP proxy_request_latency_ms Request latency in milliseconds
 # TYPE proxy_request_latency_ms histogram
@@ -39,6 +42,18 @@ export function registerMetricsRoute(app: FastifyInstance): void {
 # HELP proxy_error_total Total number of errors
 # TYPE proxy_error_total counter
     proxy_error_total ${errorTotal}
+
+# HELP sse_events_parsed_total Total number of SSE events parsed
+# TYPE sse_events_parsed_total counter
+  sse_events_parsed_total ${sseEventsParsedTotal}
+
+# HELP sse_parse_errors_total Total number of SSE parse errors
+# TYPE sse_parse_errors_total counter
+  sse_parse_errors_total ${sseParseErrorsTotal}
+
+# HELP sse_timeouts_total Total number of SSE timeouts
+# TYPE sse_timeouts_total counter
+  sse_timeouts_total ${sseTimeoutsTotal}
 `;
 
       return reply.type('text/plain').send(prometheusMetrics);

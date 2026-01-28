@@ -163,13 +163,13 @@
 
 **Purpose**: Documentation, metrics, and final integration
 
-- [ ] T065 [P] Add Prometheus metrics for SSE parsing in src/proxy/sse-parser.ts (sse_events_parsed_total)
-- [ ] T066 [P] Add Prometheus metrics for SSE errors in src/proxy/sse-parser.ts (sse_parse_errors_total)
-- [ ] T067 [P] Add Prometheus metrics for SSE timeouts in src/proxy/forwarder.ts (sse_timeouts_total)
-- [ ] T068 [P] Create SSE transport documentation in docs/sse-transport.md
-- [ ] T069 Update main README.md with SSE support section
-- [ ] T070 [P] Add SSE examples to examples/ directory
-- [ ] T071 Update API documentation with transport configuration
+- [X] T065 [P] Add Prometheus metrics for SSE parsing in src/proxy/sse-parser.ts (sse_events_parsed_total)
+- [X] T066 [P] Add Prometheus metrics for SSE errors in src/proxy/sse-parser.ts (sse_parse_errors_total)
+- [X] T067 [P] Add Prometheus metrics for SSE timeouts in src/proxy/forwarder.ts (sse_timeouts_total)
+- [X] T068 [P] Create SSE transport documentation in docs/sse-transport.md
+- [X] T069 Update main README.md with SSE support section
+- [X] T070 [P] Add SSE examples to examples/ directory
+- [X] T071 Update API documentation with transport configuration
 - [X] T072 Run full test suite and verify all 47 existing tests still pass
 - [ ] T073 Verify backward compatibility: HTTP-only configs work without changes
 - [ ] T074 Performance test: verify SSE adds <10ms to p95 latency

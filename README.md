@@ -10,6 +10,7 @@ A proxy server that sits between Azure API Management and Model Context Protocol
 - **Hot Reload**: Update configuration without restarting the proxy
 - **Container Native**: Docker/AKS/Azure Container Apps ready
 - **Production Ready**: Health checks, metrics, logging, graceful shutdown
+- **SSE Transport**: Proxy MCP servers that return Server-Sent Events (SSE)
 
 ## Quick Start
 
@@ -72,6 +73,10 @@ cp config/filters.example.json config/filters.json
 cp config/transforms.example.json config/transforms.json
 ```
 
+### SSE Transport
+
+The proxy can auto-detect SSE responses or force SSE per backend. See [docs/sse-transport.md](docs/sse-transport.md) for configuration options, examples, and metrics.
+
 ## API Endpoints
 
 ### Health Check
@@ -97,6 +102,8 @@ Content-Type: application/json
 ```
 
 Forwards requests to the specified MCP server and returns filtered/transformed responses.
+
+When the backend uses SSE, the proxy extracts the JSON-RPC payload and returns standard JSON to clients.
 
 ## Architecture
 

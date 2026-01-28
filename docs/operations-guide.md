@@ -115,6 +115,34 @@ curl -X POST http://localhost:8080/config \
   -d @config/docker.json
 ```
 
+### Transport Configuration
+
+Set the transport per MCP server to force HTTP, SSE, or auto-detection:
+
+```json
+{
+  "mcpServers": [
+    {
+      "id": "azure-apim",
+      "url": "https://example.azure-api.net/me/mcp",
+      "transport": "sse",
+      "timeout": 30000,
+      "sseOptions": {
+        "sseEventFilter": ["message"],
+        "sseBufferSize": 10
+      }
+    },
+    {
+      "id": "http-server",
+      "url": "http://localhost:5000",
+      "transport": "http"
+    }
+  ]
+}
+```
+
+Auto-detection uses the backend `Content-Type` header to decide between HTTP and SSE.
+
 ## Troubleshooting
 
 ### Check Logs

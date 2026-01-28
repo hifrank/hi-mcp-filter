@@ -130,6 +130,7 @@ export class RequestForwarder {
           timeout,
           duration: result.duration,
         });
+        this.metrics.sseTimeouts.inc();
         throw new TimeoutError(`SSE stream timeout after ${timeout}ms`);
       }
 

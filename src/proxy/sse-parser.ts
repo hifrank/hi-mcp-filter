@@ -3,8 +3,10 @@ import { createParser, type EventSourceMessage } from 'eventsource-parser';
 import { isMCPResponse, type MCPResponse } from '../mcp/validator';
 import { SSEEvent, SSEConnection, SSEParseResult } from '../types/sse';
 import { getLogger } from '../common/logger';
+import { getMetrics } from '../common/metrics';
 
 const logger = getLogger();
+const metrics = getMetrics();
 
 /**
  * SSEParser - Parse Server-Sent Events streams and extract JSON-RPC messages
@@ -49,6 +51,14 @@ export class SSEParser {
     const events: SSEEvent[] = [];
     let parseError: { message: string; eventData?: string; lineNumber?: number } | undefined;
     let timedOut = false;
+    let parseErrorRecorded = false;
+
+    const recordParseError = (): void => {
+      if (!parseErrorRecorded) {
+        metrics.sseParseErrors.inc();
+        parseErrorRecorded = true;
+      }
+    };
 
     let reader: ReadableStreamDefaultReader<Uint8Array> | undefined;
 
@@ -73,6 +83,7 @@ export class SSEParser {
       // Create SSE parser with callback
       const parser = createParser({
         onEvent: (event: EventSourceMessage) => {
+          metrics.sseEventsParsed.inc();
           const sseEvent: SSEEvent = {
             type: 'event',
             event: event.event || 'message',
@@ -141,6 +152,7 @@ export class SSEParser {
         parseError = {
           message: error instanceof Error ? error.message : String(error),
         };
+        recordParseError();
         logger.error('SSE parsing error', {
           serverId: this.connection.serverId,
           error: parseError.message,
@@ -158,6 +170,7 @@ export class SSEParser {
           message: error instanceof Error ? error.message : String(error),
           eventData: events.map(e => e.data).join('\n'),
         };
+        recordParseError();
       }
     }
 
