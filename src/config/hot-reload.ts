@@ -67,9 +67,9 @@ export class ConfigHotReloadManager {
     return this.swap.swap(newConfig);
   }
 
-  stop(): void {
+  async stop(): Promise<void> {
     if (this.watcher) {
-      this.watcher.stop();
+      await this.watcher.stop();
     }
     this.logger.info('Config hot-reload manager stopped');
   }

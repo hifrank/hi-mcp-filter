@@ -65,14 +65,14 @@ export class ConfigWatcher {
     this.debounceTimer.unref();
   }
 
-  stop(): void {
-    if (this.watcher) {
-      void this.watcher.close();
-      this.logger.info('File watcher stopped');
-    }
-
+  async stop(): Promise<void> {
     if (this.debounceTimer) {
       clearTimeout(this.debounceTimer);
+    }
+
+    if (this.watcher) {
+      await this.watcher.close();
+      this.logger.info('File watcher stopped');
     }
   }
 }

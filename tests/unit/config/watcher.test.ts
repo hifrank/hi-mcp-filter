@@ -20,7 +20,7 @@ describe('Config Watcher', () => {
     // Should only call callback once due to debouncing
     expect(changes.length).toBe(1);
 
-    watcher.stop();
+    await watcher.stop();
   });
 
   it('should call callback after debounce timeout', async () => {
@@ -33,6 +33,6 @@ describe('Config Watcher', () => {
 
     expect(callback).toHaveBeenCalled();
 
-    watcher.stop();
+    await watcher.stop();
   });
 });
