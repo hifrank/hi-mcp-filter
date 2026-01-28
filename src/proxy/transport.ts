@@ -1,6 +1,6 @@
 /**
  * Transport Detection Module
- * 
+ *
  * Determines whether to use HTTP or SSE transport for MCP backend communication
  * based on configuration or response Content-Type header.
  */
@@ -13,7 +13,7 @@ import type { MCPServer } from '../config/loader';
  */
 export function detectTransport(headers: Headers): 'http' | 'sse' {
   const contentType = headers.get('content-type');
-  
+
   if (!contentType) {
     // Default to HTTP if no Content-Type header
     return 'http';
@@ -47,15 +47,15 @@ export function getTransportForServer(server: MCPServer): 'http' | 'sse' | 'auto
  */
 export function shouldUseSSE(server: MCPServer, headers: Headers): boolean {
   const transport = getTransportForServer(server);
-  
+
   if (transport === 'sse') {
     return true;
   }
-  
+
   if (transport === 'http') {
     return false;
   }
-  
+
   // "auto" - detect from headers
   return detectTransport(headers) === 'sse';
 }

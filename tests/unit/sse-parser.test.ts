@@ -259,7 +259,7 @@ data: should not be processed
       // The close event triggers abort, but already-buffered data is parsed
       // So we expect all 3 events to be present
       expect(result.events.length).toBeGreaterThanOrEqual(2);
-      expect(result.events.find(e => e.event === 'close')).toBeDefined();
+      expect(result.events.find((e) => e.event === 'close')).toBeDefined();
     });
   });
 
@@ -283,9 +283,7 @@ data: should not be processed
     });
 
     it('should throw error for invalid buffer size', () => {
-      expect(() => new SSEParser('test', 5000, ['message'], 0)).toThrow(
-        'Invalid sseBufferSize: 0'
-      );
+      expect(() => new SSEParser('test', 5000, ['message'], 0)).toThrow('Invalid sseBufferSize: 0');
       expect(() => new SSEParser('test', 5000, ['message'], 1001)).toThrow(
         'Invalid sseBufferSize: 1001'
       );

@@ -3,10 +3,7 @@ import { validateMCPResponse } from '../../mcp/validator';
 import { getLogger } from '../../common/logger';
 import { ValidationError } from '../../common/errors';
 
-export function validateResponse(
-  request: FastifyRequest,
-  responseData: unknown
-): void {
+export function validateResponse(request: FastifyRequest, responseData: unknown): void {
   const logger = getLogger();
 
   const result = validateMCPResponse(responseData);

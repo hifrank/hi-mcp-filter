@@ -49,7 +49,7 @@ export class RequestForwarder {
         if (!response.ok) {
           throw new BackendError(`Backend returned status ${response.status}`);
         }
-  const data = (await response.json()) as MCPResponse;
+        const data = (await response.json()) as MCPResponse;
         const latency = Date.now() - startTime;
 
         this.logger.debug(`Response received from backend`, {

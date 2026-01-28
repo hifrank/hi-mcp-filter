@@ -19,9 +19,7 @@ export class ConfigValidator {
     return { valid: true, errors: [] };
   }
 
-  validatePartial(
-    config: Partial<ProxyConfig>
-  ): { valid: boolean; errors: string[] } {
+  validatePartial(config: Partial<ProxyConfig>): { valid: boolean; errors: string[] } {
     // Validate individual parts without requiring all fields
     return this.validate(config);
   }

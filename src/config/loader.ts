@@ -92,9 +92,7 @@ export function loadConfig(filePath: string): ProxyConfig {
 
     if (!isProxyConfig(parsedConfig)) {
       const errors = validateConfig.errors || [];
-      const errorMessages = errors
-        .map((e) => `${e.schemaPath}: ${e.message}`)
-        .join('; ');
+      const errorMessages = errors.map((e) => `${e.schemaPath}: ${e.message}`).join('; ');
       throw new ConfigError(`Configuration validation failed: ${errorMessages}`);
     }
 

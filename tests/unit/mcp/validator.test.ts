@@ -42,7 +42,12 @@ describe('MCP Validator', () => {
     });
 
     it('should reject response with both result and error', () => {
-      const invalid = { jsonrpc: '2.0', id: '123', result: {}, error: { code: -1, message: 'error' } };
+      const invalid = {
+        jsonrpc: '2.0',
+        id: '123',
+        result: {},
+        error: { code: -1, message: 'error' },
+      };
       const result = validateMCPResponse(invalid);
 
       expect(result.valid).toBe(false);

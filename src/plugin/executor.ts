@@ -23,10 +23,7 @@ export class PluginExecutor {
         const { promise: timeoutPromise, cancel } = this.createTimeoutPromise(timeout);
 
         try {
-          const result = await Promise.race([
-            plugin.filter(context),
-            timeoutPromise,
-          ]);
+          const result = await Promise.race([plugin.filter(context), timeoutPromise]);
 
           this.metrics.pluginCount.inc();
           return result as { action: 'allow' | 'drop'; reason: string };
@@ -67,10 +64,7 @@ export class PluginExecutor {
       const { promise: timeoutPromise, cancel } = this.createTimeoutPromise(timeout);
 
       try {
-        return await Promise.race([
-          plugin.transform(context),
-          timeoutPromise,
-        ]);
+        return await Promise.race([plugin.transform(context), timeoutPromise]);
       } finally {
         cancel();
       }

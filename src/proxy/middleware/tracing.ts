@@ -9,7 +9,7 @@ export function setupTracingHeaders(app: FastifyInstance): void {
 
   app.addHook('preHandler', (request: FastifyRequest, reply: FastifyReply, done) => {
     // Generate or use existing trace ID
-    const traceId = request.headers['x-trace-id'] as string || uuidv4();
+    const traceId = (request.headers['x-trace-id'] as string) || uuidv4();
     const spanId = uuidv4();
 
     const tracedRequest = request as TracedRequest;

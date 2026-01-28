@@ -14,7 +14,10 @@ export class ConfigWatcher {
   private debounceMs: number;
   private callback: (filePath: string) => Promise<void> | void;
 
-  constructor(debounceMs: number = 1000, callback: (filePath: string) => Promise<void> | void = async () => {}) {
+  constructor(
+    debounceMs: number = 1000,
+    callback: (filePath: string) => Promise<void> | void = async () => {}
+  ) {
     this.debounceMs = debounceMs;
     this.callback = callback;
   }

@@ -10,7 +10,7 @@ const metrics = getMetrics();
 
 /**
  * SSEParser - Parse Server-Sent Events streams and extract JSON-RPC messages
- * 
+ *
  * Uses the eventsource-parser library to handle SSE format parsing,
  * buffers events until close event or timeout, and extracts JSON-RPC payloads.
  */
@@ -35,7 +35,7 @@ export class SSEParser {
     };
     this.eventFilter = eventFilter;
     this.bufferSize = bufferSize;
-    
+
     // Enforce buffer size limit
     if (bufferSize < 1 || bufferSize > 1000) {
       throw new Error(`Invalid sseBufferSize: ${bufferSize}. Must be between 1 and 1000.`);
@@ -64,14 +64,16 @@ export class SSEParser {
 
     try {
       this.connection.state = 'CONNECTED';
-      
+
       // Set up timeout that cancels the reader to unblock the loop
       const timeoutId = setTimeout(() => {
         timedOut = true;
         this.connection.abortController?.abort();
         if (reader) {
           // Cancel the reader so the pending read resolves immediately
-          reader.cancel().catch(() => {/* ignore */});
+          reader.cancel().catch(() => {
+            /* ignore */
+          });
         }
         logger.warn('SSE stream timeout', {
           serverId: this.connection.serverId,
@@ -97,7 +99,9 @@ export class SSEParser {
             clearTimeout(timeoutId);
             this.connection.abortController?.abort();
             if (reader) {
-              reader.cancel().catch(() => {/* ignore */});
+              reader.cancel().catch(() => {
+                /* ignore */
+              });
             }
           }
 
@@ -105,7 +109,7 @@ export class SSEParser {
           if (this.eventFilter.includes(sseEvent.event)) {
             events.push(sseEvent);
             this.connection.events.push(sseEvent);
-            
+
             // Enforce buffer size limit - keep only last N events
             if (events.length > this.bufferSize) {
               events.shift();
@@ -113,7 +117,7 @@ export class SSEParser {
             if (this.connection.events.length > this.bufferSize) {
               this.connection.events.shift();
             }
-            
+
             logger.debug('SSE event received', {
               serverId: this.connection.serverId,
               eventType: sseEvent.event,
@@ -130,7 +134,7 @@ export class SSEParser {
       }
 
       const decoder = new TextDecoder();
-      
+
       let finished = false;
       while (!finished) {
         const { done, value } = await reader.read();
@@ -144,7 +148,6 @@ export class SSEParser {
 
       clearTimeout(timeoutId);
       this.connection.state = 'CLOSED';
-
     } catch (error) {
       if (error instanceof Error && error.name === 'AbortError') {
         timedOut = true;
@@ -168,7 +171,7 @@ export class SSEParser {
       } catch (error) {
         parseError = {
           message: error instanceof Error ? error.message : String(error),
-          eventData: events.map(e => e.data).join('\n'),
+          eventData: events.map((e) => e.data).join('\n'),
         };
         recordParseError();
       }
@@ -191,8 +194,8 @@ export class SSEParser {
    */
   extractJSONRPC(events: SSEEvent[]): MCPResponse {
     // Find message events (ignore close, error, etc.)
-    const messageEvents = events.filter(e => e.event === 'message');
-    
+    const messageEvents = events.filter((e) => e.event === 'message');
+
     if (messageEvents.length === 0) {
       throw new Error('No message events found in SSE stream');
     }
@@ -200,8 +203,8 @@ export class SSEParser {
     // For single-message responses, parse the first message event
     // For multi-message streams, concatenate all data fields
     const dataPayload = messageEvents
-      .map(e => e.data)
-      .filter(d => d && d.trim().length > 0)
+      .map((e) => e.data)
+      .filter((d) => d && d.trim().length > 0)
       .join('\n');
 
     if (!dataPayload) {

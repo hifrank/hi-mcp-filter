@@ -60,7 +60,7 @@ export function registerProxyRoutes(
           actualTransport = 'sse';
           const sseEventFilter = server.sseOptions?.sseEventFilter || ['message'];
           const sseBufferSize = server.sseOptions?.sseBufferSize || 10;
-          
+
           response = await forwarder.forwardSSE(
             server.url,
             serverId,
@@ -96,15 +96,21 @@ export function registerProxyRoutes(
         return;
       } catch (error) {
         const latencyMs = Date.now() - startTime;
-        
-        logger.error(`Proxy request failed for server: ${serverId} after ${latencyMs}ms`, error as Error);
+
+        logger.error(
+          `Proxy request failed for server: ${serverId} after ${latencyMs}ms`,
+          error as Error
+        );
 
         // Return 502 for SSE parsing errors, 504 for timeouts, 500 for other errors
         let statusCode = 500;
         if (error instanceof Error) {
           if (error.message.includes('timeout')) {
             statusCode = 504;
-          } else if (error.message.includes('SSE stream error') || error.message.includes('parsing')) {
+          } else if (
+            error.message.includes('SSE stream error') ||
+            error.message.includes('parsing')
+          ) {
             statusCode = 502;
           }
         }

@@ -1,6 +1,6 @@
 /**
  * T027: Contract test for SSE format compliance
- * 
+ *
  * Ensures SSE parser adheres to W3C Server-Sent Events specification:
  * https://html.spec.whatwg.org/multipage/server-sent-events.html
  */
@@ -216,9 +216,7 @@ data:
     });
 
     it('should handle rapid-fire events', async () => {
-      const events = Array.from({ length: 100 }, (_, i) => 
-        `data: event-${i}\n\n`
-      ).join('');
+      const events = Array.from({ length: 100 }, (_, i) => `data: event-${i}\n\n`).join('');
 
       const parser = new SSEParser('test', 5000, ['message'], 100);
       const result = await parser.parseSSEStream(createSSEResponse(events));
