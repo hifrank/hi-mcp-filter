@@ -28,10 +28,13 @@ describe('Graceful Shutdown', () => {
 
   it('should timeout if shutdown takes too long', async () => {
     const mockApp = {
-      close: jest.fn(() => new Promise((resolve) => {
-        const timer = setTimeout(resolve, 5000);
-        timer.unref();
-      })),
+      close: jest.fn(
+        () =>
+          new Promise((resolve) => {
+            const timer = setTimeout(resolve, 5000);
+            timer.unref();
+          })
+      ),
     };
 
     const exitSpy = jest.spyOn(process, 'exit').mockImplementation(() => undefined as never);
