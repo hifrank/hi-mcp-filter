@@ -15,7 +15,10 @@ describe('Config Watcher', () => {
     watcher['handleChange']('/path/to/config.json');
 
     // Wait for debounce
-    await new Promise((resolve) => setTimeout(resolve, 200));
+    await new Promise((resolve) => {
+      const timer = setTimeout(resolve, 200);
+      timer.unref();
+    });
 
     // Should only call callback once due to debouncing
     expect(changes.length).toBe(1);
@@ -29,7 +32,10 @@ describe('Config Watcher', () => {
 
     watcher['handleChange']('/path/to/config.json');
 
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((resolve) => {
+      const timer = setTimeout(resolve, 100);
+      timer.unref();
+    });
 
     expect(callback).toHaveBeenCalled();
 

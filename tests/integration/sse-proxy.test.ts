@@ -332,7 +332,10 @@ describe('SSE Proxy Integration Tests', () => {
       });
 
       // Give a moment for request to start
-      await new Promise((r) => setTimeout(r, 50));
+      await new Promise((r) => {
+        const timer = setTimeout(r, 50);
+        timer.unref();
+      });
 
       // Close app; should resolve promptly without hanging
       await proxyApp.close();

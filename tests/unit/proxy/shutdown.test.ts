@@ -17,7 +17,10 @@ describe('Graceful Shutdown', () => {
     shutdown.shutdown(mockApp as any, 1000).catch(() => {});
 
     // Second shutdown should return early
-    await new Promise((resolve) => setTimeout(resolve, 100));
+    await new Promise((resolve) => {
+      const timer = setTimeout(resolve, 100);
+      timer.unref();
+    });
     expect(shutdown['isShuttingDown']).toBe(true);
 
     exitSpy.mockRestore();
@@ -32,7 +35,10 @@ describe('Graceful Shutdown', () => {
 
     shutdown.shutdown(mockApp as any, 100).catch(() => {});
 
-    await new Promise((resolve) => setTimeout(resolve, 150));
+    await new Promise((resolve) => {
+      const timer = setTimeout(resolve, 150);
+      timer.unref();
+    });
     expect(exitSpy).toHaveBeenCalledWith(1);
 
     exitSpy.mockRestore();
