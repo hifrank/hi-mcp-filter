@@ -33,6 +33,7 @@ export class RequestForwarder {
       // Create abort controller for timeout
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), timeout);
+      timeoutId.unref();
 
       try {
         const jsonHeaders: Record<string, string> = { [contentTypeHeader]: 'application/json' };

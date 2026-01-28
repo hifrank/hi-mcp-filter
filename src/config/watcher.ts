@@ -62,6 +62,7 @@ export class ConfigWatcher {
         }
       })();
     }, this.debounceMs);
+    this.debounceTimer.unref();
   }
 
   stop(): void {

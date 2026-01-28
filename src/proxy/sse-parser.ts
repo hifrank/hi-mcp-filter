@@ -81,6 +81,7 @@ export class SSEParser {
           timeout: this.connection.timeout,
         });
       }, this.connection.timeout);
+      timeoutId.unref();
 
       // Create SSE parser with callback
       const parser = createParser({

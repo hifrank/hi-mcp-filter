@@ -87,6 +87,7 @@ export class PluginExecutor {
 
     const promise = new Promise<never>((_resolve, reject) => {
       timer = setTimeout(() => reject(new Error('Plugin timeout')), timeout);
+      timer.unref();
     });
 
     return {
