@@ -98,36 +98,38 @@ describe('SSE Proxy Integration Tests', () => {
         res.end();
       });
 
-      await new Promise<void>((resolve) => {
-        badSSEServer.listen(badSSEPort, () => resolve());
-      });
+      try {
+        await new Promise<void>((resolve) => {
+          badSSEServer.listen(badSSEPort, () => resolve());
+        });
 
-      const mockConfig: MCPServer[] = [
-        {
-          id: 'bad-sse-server',
-          url: `http://localhost:${badSSEPort}/endpoint`,
-          transport: 'sse',
-        },
-      ];
+        const mockConfig: MCPServer[] = [
+          {
+            id: 'bad-sse-server',
+            url: `http://localhost:${badSSEPort}/endpoint`,
+            transport: 'sse',
+          },
+        ];
 
-      const mockManager = {
-        getConfig: () => ({ mcpServers: mockConfig }),
-        on: jest.fn(),
-      } as unknown as ConfigHotReloadManager;
+        const mockManager = {
+          getConfig: () => ({ mcpServers: mockConfig }),
+          on: jest.fn(),
+        } as unknown as ConfigHotReloadManager;
 
-      await registerProxyRoutes(proxyApp, mockManager);
+        await registerProxyRoutes(proxyApp, mockManager);
 
-      const response = await proxyApp.inject({
-        method: 'POST',
-        url: '/proxy/bad-sse-server',
-        payload: { jsonrpc: '2.0', method: 'test', id: 1 },
-      });
+        const response = await proxyApp.inject({
+          method: 'POST',
+          url: '/proxy/bad-sse-server',
+          payload: { jsonrpc: '2.0', method: 'test', id: 1 },
+        });
 
-      expect(response.statusCode).toBe(502);
-
-      await new Promise<void>((resolve, reject) => {
-        badSSEServer.close((err) => (err ? reject(err) : resolve()));
-      });
+        expect(response.statusCode).toBe(502);
+      } finally {
+        await new Promise<void>((resolve) => {
+          badSSEServer.close((_err) => resolve());
+        });
+      }
     });
   });
 
@@ -256,43 +258,45 @@ describe('SSE Proxy Integration Tests', () => {
         // Keep connection open - don't call res.end()
       });
 
-      await new Promise<void>((resolve) => {
-        slowSSEServer.listen(slowSSEPort, () => resolve());
-      });
+      try {
+        await new Promise<void>((resolve) => {
+          slowSSEServer.listen(slowSSEPort, () => resolve());
+        });
 
-      const mockConfig: MCPServer[] = [
-        {
-          id: 'slow-sse-server',
-          url: `http://localhost:${slowSSEPort}/slow`,
-          transport: 'sse',
-          timeout: 200, // 200ms timeout
-          sseOptions: { sseEventFilter: ['message', 'close'] },
-        },
-      ];
+        const mockConfig: MCPServer[] = [
+          {
+            id: 'slow-sse-server',
+            url: `http://localhost:${slowSSEPort}/slow`,
+            transport: 'sse',
+            timeout: 200, // 200ms timeout
+            sseOptions: { sseEventFilter: ['message', 'close'] },
+          },
+        ];
 
-      const mockManager = {
-        getConfig: () => ({ mcpServers: mockConfig }),
-        on: jest.fn(),
-      } as unknown as ConfigHotReloadManager;
+        const mockManager = {
+          getConfig: () => ({ mcpServers: mockConfig }),
+          on: jest.fn(),
+        } as unknown as ConfigHotReloadManager;
 
-      await registerProxyRoutes(proxyApp, mockManager);
+        await registerProxyRoutes(proxyApp, mockManager);
 
-      const start = Date.now();
-      const response = await proxyApp.inject({
-        method: 'POST',
-        url: '/proxy/slow-sse-server',
-        payload: { jsonrpc: '2.0', method: 'test', id: 1 },
-      });
-      const elapsed = Date.now() - start;
+        const start = Date.now();
+        const response = await proxyApp.inject({
+          method: 'POST',
+          url: '/proxy/slow-sse-server',
+          payload: { jsonrpc: '2.0', method: 'test', id: 1 },
+        });
+        const elapsed = Date.now() - start;
 
-      // Should timeout and return 504
-      expect(response.statusCode).toBe(504);
-      // Should complete within reasonable time (timeout + overhead)
-      expect(elapsed).toBeLessThan(500);
-
-      await new Promise<void>((resolve, reject) => {
-        slowSSEServer.close((err) => (err ? reject(err) : resolve()));
-      });
+        // Should timeout and return 504
+        expect(response.statusCode).toBe(504);
+        // Should complete within reasonable time (timeout + overhead)
+        expect(elapsed).toBeLessThan(500);
+      } finally {
+        await new Promise<void>((resolve) => {
+          slowSSEServer.close((_err) => resolve());
+        });
+      }
     }, 5000); // 5s test timeout
   });
 
@@ -305,47 +309,50 @@ describe('SSE Proxy Integration Tests', () => {
         // keep open
       });
 
-      await new Promise<void>((resolve) => slowSSEServer.listen(slowSSEPort, () => resolve()));
+      try {
+        await new Promise<void>((resolve) => slowSSEServer.listen(slowSSEPort, () => resolve()));
 
-      const mockConfig: MCPServer[] = [
-        {
-          id: 'graceful-sse',
-          url: `http://localhost:${slowSSEPort}/slow`,
-          transport: 'sse',
-          timeout: 500,
-          sseOptions: { sseEventFilter: ['message', 'close'] },
-        },
-      ];
+        const mockConfig: MCPServer[] = [
+          {
+            id: 'graceful-sse',
+            url: `http://localhost:${slowSSEPort}/slow`,
+            transport: 'sse',
+            timeout: 500,
+            sseOptions: { sseEventFilter: ['message', 'close'] },
+          },
+        ];
 
-      const mockManager = {
-        getConfig: () => ({ mcpServers: mockConfig }),
-        on: jest.fn(),
-      } as unknown as ConfigHotReloadManager;
+        const mockManager = {
+          getConfig: () => ({ mcpServers: mockConfig }),
+          on: jest.fn(),
+        } as unknown as ConfigHotReloadManager;
 
-      await registerProxyRoutes(proxyApp, mockManager);
+        await registerProxyRoutes(proxyApp, mockManager);
 
-      // Fire request but do not await immediately
-      const injectPromise = proxyApp.inject({
-        method: 'POST',
-        url: '/proxy/graceful-sse',
-        payload: { jsonrpc: '2.0', method: 'test', id: 1 },
-      });
+        // Fire request but do not await immediately
+        const injectPromise = proxyApp.inject({
+          method: 'POST',
+          url: '/proxy/graceful-sse',
+          payload: { jsonrpc: '2.0', method: 'test', id: 1 },
+        });
 
-      // Give a moment for request to start
-      await new Promise((r) => {
-        const timer = setTimeout(r, 50);
-        timer.unref();
-      });
+        // Give a moment for request to start
+        await new Promise((r) => {
+          const timer = setTimeout(r, 50);
+          timer.unref();
+        });
 
-      // Close app; should resolve promptly without hanging
-      await proxyApp.close();
+        // Close app; should resolve promptly without hanging
+        await proxyApp.close();
 
-      // Request should resolve with error or timeout, but test ensures close does not hang
-      await expect(injectPromise).resolves;
-
-      await new Promise<void>((resolve, reject) => {
-        slowSSEServer.close((err) => (err ? reject(err) : resolve()));
-      });
+        // Request should resolve with error or timeout, but test ensures close does not hang
+        await expect(injectPromise).resolves;
+      } finally {
+        // Always ensure slowSSEServer is closed, even if test fails
+        await new Promise<void>((resolve) => {
+          slowSSEServer.close((_err) => resolve());
+        });
+      }
     }, 5000);
   });
 });
