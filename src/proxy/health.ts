@@ -1,6 +1,6 @@
 import { getLogger } from '../common/logger';
 
-export interface HealthCheckResponse {
+export interface HealthCheckResponse extends Record<string, unknown> {
   status: 'ok' | 'degraded' | 'error';
   timestamp: string;
   uptime: number;

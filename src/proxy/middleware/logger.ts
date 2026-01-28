@@ -2,7 +2,7 @@ import { FastifyRequest } from 'fastify';
 import { getLogger } from '../../common/logger';
 import type { MCPResponse } from '../../mcp/validator';
 
-export interface LogEntry {
+export interface LogEntry extends Record<string, unknown> {
   timestamp: string;
   requestId: string;
   method: string;
