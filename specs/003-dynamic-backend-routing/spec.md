@@ -17,7 +17,7 @@ Azure API Management (APIM) needs to delegate MCP requests it cannot process dir
 
 **Acceptance Scenarios**:
 
-1. **Given** request includes `APIM-PROXIED-MCP-HOST: server1.example.com`, **When** proxy receives request, **Then** proxy forwards to `http://server1.example.com/mcp` instead of configured backend
+1. **Given** request includes `APIM-PROXIED-MCP-HOST: server1.example.com`, **When** proxy receives request, **Then** proxy forwards to `https://server1.example.com:443/mcp` instead of configured backend
 2. **Given** request does NOT include `APIM-PROXIED-MCP-HOST` header, **When** proxy receives request, **Then** proxy uses standard config-based routing (backward compatible)
 3. **Given** `APIM-PROXIED-MCP-HOST` header contains invalid hostname, **When** proxy receives request, **Then** proxy returns 400 Bad Request with validation error
 4. **Given** request includes both header and path parameter specifying backend, **When** conflict occurs, **Then** header takes precedence (per FR-011)
@@ -85,16 +85,79 @@ Dynamic backend routing introduces a potential security risk: APIM could be tric
 ### Measurable Outcomes
 
 - **SC-001**: Proxy successfully routes requests with valid `APIM-PROXIED-MCP-HOST` header to specified backend
-- **SC-002**: Allowlist validation prevents routing to non-whitelisted backends (403 responses)
+- **SC-002**: Allowlist validation prevents routing to non-allowlisted backends (403 responses)
 - **SC-003**: Backward compatibility maintained: requests without header route to configured backend (zero latency overhead)
 - **SC-004**: Filters applied to dynamically-routed responses match behavior of static-route responses
 - **SC-005**: Header validation overhead <2ms per request (hostname parsing, allowlist check)
 - **SC-006**: Logging includes backend selection reason (STATIC_CONFIG, HEADER, or ERROR) in 100% of requests
 - **SC-007**: All existing tests continue to pass (zero regression)
 
-### Measurable Outcomes
+## Technical Considerations
 
-- **SC-001**: [Measurable metric, e.g., "Users can complete account creation in under 2 minutes"]
-- **SC-002**: [Measurable metric, e.g., "System handles 1000 concurrent users without degradation"]
-- **SC-003**: [User satisfaction metric, e.g., "90% of users successfully complete primary task on first attempt"]
-- **SC-004**: [Business metric, e.g., "Reduce support tickets related to [X] by 50%"]
+### Protocol & Port Selection
+
+When routing via `APIM-PROXIED-MCP-HOST` header, the proxy determines the backend URL as follows:
+
+**Step 1: Extract hostname and port from header**
+```
+APIM-PROXIED-MCP-HOST: server.example.com
+  → hostname = "server.example.com", port = null
+
+APIM-PROXIED-MCP-HOST: server.example.com:9000
+  → hostname = "server.example.com", port = 9000
+```
+
+**Step 2: Determine protocol (secure-by-default)**
+- ALWAYS use HTTPS
+- Future enhancement: Allow config flag `allowInsecureProtocol` for internal-only backends requiring HTTP
+
+**Step 3: Determine port (precedence order)**
+1. If port specified in header → use that port
+2. Else if `dynamicBackendRouting.defaultPort` configured → use that (default: 443)
+3. Else use port 443 (default HTTPS port)
+
+**Step 4: Determine transport type (HTTP vs SSE)**
+1. If dynamically-routed hostname has static config entry → use configured transport
+2. Else auto-detect from response `Content-Type: text/event-stream` header
+3. If auto-detection fails → default to HTTP
+
+**Step 5: Construct backend URL**
+- Base: `https://{hostname}:{port}`
+- Path: `/mcp` for HTTP transport, `/sse` for SSE transport (same as static routing)
+- Example: `https://server.example.com:9000/mcp`
+
+### Examples
+
+| Header Value | Parsed Result | Final URL |
+|---|---|---|
+| `server.example.com` | hostname=server.example.com, port=null | `https://server.example.com:443/mcp` |
+| `server.example.com:9000` | hostname=server.example.com, port=9000 | `https://server.example.com:9000/mcp` |
+| `internal-mcp:8080` | hostname=internal-mcp, port=8080 | `https://internal-mcp:8080/mcp` |
+| `mcp-sse.example.com` (SSE configured) | hostname=mcp-sse.example.com, port=null | `https://mcp-sse.example.com:443/sse` |
+
+### Future Enhancement Path
+
+For MVP (Phase 1), protocol is always HTTPS. Future enhancements:
+- Allow explicit protocol in header: `APIM-PROXIED-MCP-HOST: server.example.com:http:8080`
+- Allow per-backend protocol override in config: `"allowInsecureProtocol": true` for specific backends
+- Support custom path prefixes per backend
+
+### Configuration Schema
+
+```json
+{
+  "dynamicBackendRouting": {
+    "enabled": true,
+    "headerName": "APIM-PROXIED-MCP-HOST",
+    "allowlist": [
+      "*.internal.example.com",
+      "mcp-server-1.example.com",
+      "192.168.1.100"
+    ],
+    "denyByDefault": true,
+    "defaultPort": 443,
+    "allowIpAddresses": false,
+    "allowInsecureProtocol": false
+  }
+}
+```

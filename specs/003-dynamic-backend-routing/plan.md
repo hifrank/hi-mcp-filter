@@ -148,6 +148,18 @@ config/
 └── docker.json                          # MODIFY: Add dynamicBackendRouting for Docker
 ```
 
+## Design Documents
+
+**[protocol-handling-design.md](./protocol-handling-design.md)** — Phase 1 Reference Document
+- Complete specification for Rules 1-5: header parsing → URL construction
+- Configuration schema with field definitions
+- Validation rules, error handling, and error response format
+- Performance targets (<2ms overhead) with optimization strategies
+- Comprehensive testing strategy with code examples
+- **Reference this document when implementing Tasks T008-T016**
+
+---
+
 ## Implementation Phases
 
 ### Phase 1: Foundation (Shared Infrastructure)

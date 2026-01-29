@@ -240,6 +240,52 @@
           "default": 1000
         }
       }
+    },
+    "dynamicBackendRouting": {
+      "type": "object",
+      "required": ["enabled", "headerName", "allowlist", "denyByDefault"],
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable dynamic backend routing via request header"
+        },
+        "headerName": {
+          "type": "string",
+          "pattern": "^[A-Za-z0-9-]+$",
+          "default": "APIM-PROXIED-MCP-HOST",
+          "description": "HTTP header name to read backend hostname from"
+        },
+        "allowlist": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "default": [],
+          "description": "List of allowed backend hostnames (supports wildcards like *.internal.example.com)"
+        },
+        "denyByDefault": {
+          "type": "boolean",
+          "default": true,
+          "description": "Deny backends not in allowlist (recommended: true for security)"
+        },
+        "defaultPort": {
+          "type": "integer",
+          "minimum": 1,
+          "maximum": 65535,
+          "default": 443,
+          "description": "Default port if not specified in header"
+        },
+        "allowIpAddresses": {
+          "type": "boolean",
+          "default": false,
+          "description": "Allow IP addresses in allowlist and header"
+        },
+        "allowInsecureProtocol": {
+          "type": "boolean",
+          "default": false,
+          "description": "Allow HTTP protocol (MVP: always false, HTTPS only)"
+        }
+      }
     }
   }
 }

@@ -59,6 +59,29 @@ export interface Plugin {
   timeout?: number;
 }
 
+// Dynamic Backend Routing Types (Feature 003)
+export interface DynamicBackendConfig {
+  enabled: boolean;
+  headerName: string;
+  allowlist: string[];
+  denyByDefault: boolean;
+  defaultPort?: number;
+  allowIpAddresses?: boolean;
+  allowInsecureProtocol?: boolean;
+}
+
+export enum BackendSelection {
+  STATIC_CONFIG = 'STATIC_CONFIG',
+  HEADER = 'HEADER',
+  ERROR = 'ERROR',
+}
+
+export interface RoutingDecision {
+  backendUrl: string;
+  selectionSource: BackendSelection;
+  error?: string;
+}
+
 export interface ProxyConfig {
   server: {
     port: number;
@@ -77,6 +100,7 @@ export interface ProxyConfig {
     enabled?: boolean;
     debounceMs?: number;
   };
+  dynamicBackendRouting?: DynamicBackendConfig;
 }
 
 export function loadConfig(filePath: string): ProxyConfig {

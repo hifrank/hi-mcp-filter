@@ -23,5 +23,19 @@
     "enabled": true,
     "directory": "/app/plugins",
     "timeout": 5000
+  },
+  "dynamicBackendRouting": {
+    "enabled": true,
+    "headerName": "APIM-PROXIED-MCP-HOST",
+    "allowlist": [
+      "*.internal.mycompany.com",
+      "*.k8s.svc.cluster.local",
+      "mcp-prod.example.com",
+      "mcp-staging.example.com"
+    ],
+    "denyByDefault": true,
+    "defaultPort": 443,
+    "allowIpAddresses": false,
+    "allowInsecureProtocol": false
   }
 }

@@ -46,5 +46,36 @@
         ]
       }
     }
-  ]
+  ],
+  "dynamicBackendRouting": {
+    "enabled": false,
+    "headerName": "APIM-PROXIED-MCP-HOST",
+    "allowlist": [],
+    "denyByDefault": true,
+    "defaultPort": 443,
+    "allowIpAddresses": false,
+    "allowInsecureProtocol": false,
+    "_comment_minimal": "Minimal example: disabled with empty allowlist (denies all dynamic routing)",
+    "_comment_full_example": {
+      "enabled": true,
+      "headerName": "APIM-PROXIED-MCP-HOST",
+      "allowlist": [
+        "*.internal.example.com",
+        "mcp-server-1.example.com",
+        "mcp-server-2.example.com",
+        "192.168.1.100"
+      ],
+      "denyByDefault": true,
+      "defaultPort": 443,
+      "allowIpAddresses": false,
+      "allowInsecureProtocol": false,
+      "_explanation_enabled": "Set to true to enable dynamic backend routing",
+      "_explanation_headerName": "HTTP header to read backend hostname from (must be valid HTTP header name)",
+      "_explanation_allowlist": "List of allowed backends - supports wildcards (*.example.com), exact matches, and IP addresses if allowIpAddresses=true",
+      "_explanation_denyByDefault": "If true, only allowlisted backends are permitted (recommended for security)",
+      "_explanation_defaultPort": "Port to use if not specified in header (default: 443 for HTTPS)",
+      "_explanation_allowIpAddresses": "If true, allow IP addresses in allowlist and header values",
+      "_explanation_allowInsecureProtocol": "MVP: always false (HTTPS only); future: allow HTTP for internal backends"
+    }
+  }
 }
