@@ -27,14 +27,14 @@ export function parseBackendHostHeader(headerValue: string | undefined): ParsedB
 
   // Trim whitespace
   const trimmed = headerValue.trim();
-  
+
   if (trimmed === '') {
     return null;
   }
 
   // Split on last ':' to separate hostname and optional port
   const lastColonIndex = trimmed.lastIndexOf(':');
-  
+
   if (lastColonIndex === -1) {
     // No port specified
     return {
@@ -57,7 +57,7 @@ export function parseBackendHostHeader(headerValue: string | undefined): ParsedB
   }
 
   const port = parseInt(portStr, 10);
-  
+
   if (isNaN(port) || port < 1 || port > 65535) {
     throw new Error(`Invalid port in header: ${portStr} (must be 1-65535)`);
   }
@@ -73,10 +73,7 @@ export function parseBackendHostHeader(headerValue: string | undefined): ParsedB
  * Precedence: explicit port > config.defaultPort > 443
  * Per protocol-handling-design.md
  */
-export function determinePort(
-  parsed: ParsedBackendHost,
-  config: DynamicBackendConfig
-): number {
+export function determinePort(parsed: ParsedBackendHost, config: DynamicBackendConfig): number {
   // Explicit port in header takes precedence
   if (parsed.port !== null) {
     return parsed.port;
@@ -113,7 +110,7 @@ export function determineTransport(
 ): 'http' | 'sse' {
   // Check if this hostname has static configuration
   if (staticServers) {
-    const serverConfig = staticServers.find(s => s.hostname === hostname);
+    const serverConfig = staticServers.find((s) => s.hostname === hostname);
     if (serverConfig && serverConfig.transport) {
       if (serverConfig.transport === 'sse') {
         return 'sse';
@@ -134,10 +131,10 @@ export function determineTransport(
  */
 export function constructBackendUrl(components: BackendUrlComponents): string {
   const { protocol, hostname, port, transport } = components;
-  
+
   // Determine path based on transport type
   const path = transport === 'sse' ? '/sse' : '/mcp';
-  
+
   // Construct full URL
   return `${protocol}://${hostname}:${port}${path}`;
 }
@@ -157,8 +154,12 @@ export function validateHostname(hostname: string): boolean {
   }
 
   // Basic check: no leading/trailing dots or hyphens
-  if (hostname.startsWith('.') || hostname.endsWith('.') || 
-      hostname.startsWith('-') || hostname.endsWith('-')) {
+  if (
+    hostname.startsWith('.') ||
+    hostname.endsWith('.') ||
+    hostname.startsWith('-') ||
+    hostname.endsWith('-')
+  ) {
     return false;
   }
 

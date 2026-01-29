@@ -26,7 +26,7 @@ export function selectBackend(context: SelectionContext): RoutingDecision {
         selectionSource: BackendSelection.STATIC_CONFIG,
       };
     }
-    
+
     return {
       backendUrl: '',
       selectionSource: BackendSelection.ERROR,
@@ -38,7 +38,7 @@ export function selectBackend(context: SelectionContext): RoutingDecision {
   if (headerValue && headerValue.trim() !== '') {
     try {
       const dynamicUrl = resolveBackendFromHeader(headerValue, config, staticServers);
-      
+
       if (dynamicUrl) {
         logger.info('Backend selected from header', {
           source: BackendSelection.HEADER,

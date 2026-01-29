@@ -1,6 +1,18 @@
 import { describe, it, expect, beforeEach } from '@jest/globals';
-import { parseBackendHostHeader, determinePort, determineProtocol, determineTransport, constructBackendUrl, validateHostname, resolveBackendFromHeader } from '@/proxy/dynamic-routing/resolver';
-import { selectBackend, isValidBackend, getSelectionSourceDescription } from '@/proxy/dynamic-routing/selector';
+import {
+  parseBackendHostHeader,
+  determinePort,
+  determineProtocol,
+  determineTransport,
+  constructBackendUrl,
+  validateHostname,
+  resolveBackendFromHeader,
+} from '@/proxy/dynamic-routing/resolver';
+import {
+  selectBackend,
+  isValidBackend,
+  getSelectionSourceDescription,
+} from '@/proxy/dynamic-routing/selector';
 import { BackendSelection, DynamicBackendConfig } from '@/config/loader';
 
 describe('Dynamic Backend Routing - Integration Tests', () => {
@@ -10,11 +22,7 @@ describe('Dynamic Backend Routing - Integration Tests', () => {
     config = {
       enabled: true,
       headerName: 'APIM-PROXIED-MCP-HOST',
-      allowlist: [
-        '*.internal.example.com',
-        'mcp-server-1.example.com',
-        '192.168.1.100',
-      ],
+      allowlist: ['*.internal.example.com', 'mcp-server-1.example.com', '192.168.1.100'],
       denyByDefault: true,
       defaultPort: 443,
       allowIpAddresses: true,
@@ -112,27 +120,21 @@ describe('Dynamic Backend Routing - Integration Tests', () => {
     });
 
     it('should use SSE transport when configured statically', () => {
-      const staticServers = [
-        { hostname: 'sse-server.example.com', transport: 'sse' as const },
-      ];
+      const staticServers = [{ hostname: 'sse-server.example.com', transport: 'sse' as const }];
 
       const transport = determineTransport('sse-server.example.com', staticServers);
       expect(transport).toBe('sse');
     });
 
     it('should resolve SSE backend URL correctly', () => {
-      const staticServers = [
-        { hostname: 'sse.example.com', transport: 'sse' as const },
-      ];
+      const staticServers = [{ hostname: 'sse.example.com', transport: 'sse' as const }];
 
       const result = resolveBackendFromHeader('sse.example.com:9000', config, staticServers);
       expect(result).toBe('https://sse.example.com:9000/sse');
     });
 
     it('should resolve HTTP backend URL correctly', () => {
-      const staticServers = [
-        { hostname: 'http.example.com', transport: 'http' as const },
-      ];
+      const staticServers = [{ hostname: 'http.example.com', transport: 'http' as const }];
 
       const result = resolveBackendFromHeader('http.example.com:8080', config, staticServers);
       expect(result).toBe('https://http.example.com:8080/mcp');
@@ -144,7 +146,7 @@ describe('Dynamic Backend Routing - Integration Tests', () => {
       expect(() => {
         parseBackendHostHeader('');
       }).not.toThrow(); // Empty returns null, not error
-      
+
       const result = parseBackendHostHeader('');
       expect(result).toBeNull();
     });
@@ -281,9 +283,7 @@ describe('Dynamic Backend Routing - Integration Tests', () => {
     });
 
     it('Rule 4: should use static config transport over default', () => {
-      const staticServers = [
-        { hostname: 'server.example.com', transport: 'sse' as const },
-      ];
+      const staticServers = [{ hostname: 'server.example.com', transport: 'sse' as const }];
       const transport = determineTransport('server.example.com', staticServers);
       expect(transport).toBe('sse');
     });
