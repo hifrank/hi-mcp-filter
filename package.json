@@ -35,7 +35,7 @@
     "chokidar": "^3.5.3",
     "dotenv": "^16.3.1",
     "eventsource-parser": "^3.0.6",
-    "fastify": "^4.24.3",
+    "fastify": "^5.7.3",
     "jsonata": "^2.0.0",
     "jsonpath-plus": "^10.3.0",
     "pino": "^8.17.2",
